@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -160,6 +159,75 @@
   .ao-vivo .pt{width:7px;height:7px;border-radius:50%;background:#7fe0a6;box-shadow:0 0 0 0 rgba(127,224,166,.6);animation:pulso 1.8s infinite}
   @keyframes pulso{0%{box-shadow:0 0 0 0 rgba(127,224,166,.55)}70%{box-shadow:0 0 0 7px rgba(127,224,166,0)}100%{box-shadow:0 0 0 0 rgba(127,224,166,0)}}
   .escondido{display:none!important}
+
+  /* ===== localização no topo ===== */
+  .loc-btn{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);color:#eaf3ec;padding:8px 13px;border-radius:30px;font-size:12.5px;font-weight:600;max-width:42vw;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .loc-btn:hover{background:rgba(255,255,255,.2)}
+
+  /* ===== PORTAL com cabeçalho (oferta) + rodapé (carrossel) ===== */
+  #tela-portal.portal{display:flex;flex-direction:column;min-height:100vh;padding:0;place-items:unset}
+  .portal-wrap{flex:1;width:100%;max-width:540px;margin:0 auto;padding:24px 18px;display:flex;flex-direction:column;gap:18px;justify-content:center}
+  .hero-oferta{border-radius:22px;overflow:hidden;position:relative;min-height:188px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;padding:22px;background:linear-gradient(135deg,var(--verde),var(--verde-escuro));box-shadow:0 18px 44px rgba(15,46,34,.24)}
+  .hero-oferta .bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+  .hero-oferta .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,40,28,.18),rgba(7,40,28,.8))}
+  .hero-oferta>*{position:relative;z-index:1}
+  .hero-oferta .et{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;background:var(--oferta);color:#3a2400;font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:5px 11px;border-radius:30px;margin-bottom:12px}
+  .hero-oferta h2{font-size:25px;margin-bottom:6px;text-shadow:0 2px 16px rgba(0,0,0,.3)}
+  .hero-oferta p{font-size:14px;opacity:.95}
+  .hero-oferta .meta{margin-top:11px;font-size:12px;opacity:.9;display:flex;gap:14px;flex-wrap:wrap}
+
+  /* carrossel (rodapé login + rodapé app) */
+  .car-faixa{background:linear-gradient(180deg,transparent,rgba(27,67,50,.06));padding:14px 0 18px;width:100%}
+  .car-cab{max-width:1080px;margin:0 auto;padding:0 20px 9px;display:flex;align-items:center;justify-content:space-between}
+  .car-cab .t{font-size:12px;font-weight:800;color:var(--verde-escuro);letter-spacing:.05em;text-transform:uppercase}
+  .car-cab .nav{display:flex;gap:6px}
+  .car-cab .nav button{width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:var(--sombra);color:var(--verde);font-size:16px;display:grid;place-items:center}
+  .car-janela{max-width:1080px;margin:0 auto;overflow:hidden;padding:4px 20px 6px}
+  .car-trilho{display:flex;gap:13px;transition:transform .6s cubic-bezier(.4,0,.2,1);will-change:transform}
+  .car-card{flex:0 0 270px;border-radius:15px;overflow:hidden;background:#fff;box-shadow:var(--sombra);position:relative;min-height:118px;display:flex;flex-direction:column;justify-content:flex-end;color:var(--tinta);padding:15px;border:1px solid var(--linha)}
+  .car-card.patro{border:1.5px solid rgba(112,72,232,.4)}
+  .car-card .bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+  .car-card.tem-foto{color:#fff}
+  .car-card.tem-foto .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent,rgba(0,0,0,.7))}
+  .car-card>*{position:relative;z-index:1}
+  .car-card .tagp{align-self:flex-start;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-bottom:auto}
+  .car-card .tagp.of{background:var(--oferta);color:#3a2400}
+  .car-card .tagp.pa{background:#7048e8;color:#fff}
+  .car-card h4{font-size:15.5px;margin:8px 0 3px}
+  .car-card p{font-size:12.5px;opacity:.9;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .car-card .v{font-size:11px;opacity:.8;margin-top:5px}
+  @media(max-width:560px){.car-card{flex-basis:80vw}}
+
+  /* rodapé patrocinado depois do login */
+  .rodape-patro{margin:26px -2px 0;border-top:1px solid var(--linha);padding-top:14px}
+  .rodape-patro .et-rod{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#7048e8;padding:0 2px 4px}
+
+  /* ===== recomendação melhor lugar ===== */
+  .reco{border-radius:18px;padding:20px;color:#fff;background:linear-gradient(135deg,var(--verde),var(--verde-escuro));box-shadow:0 14px 34px rgba(45,106,79,.3);margin-bottom:18px}
+  .reco .et{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;opacity:.85}
+  .reco h3{font-size:23px;margin:5px 0 2px}
+  .reco .cob{font-size:13px;opacity:.92}
+  .reco .linhas{display:flex;gap:20px;flex-wrap:wrap;margin-top:13px}
+  .reco .bloco .n{font-size:21px;font-weight:800;font-family:Georgia,serif}
+  .reco .bloco .r{font-size:11.5px;opacity:.85}
+  .reco .eco{margin-top:13px;background:rgba(255,255,255,.16);border-radius:11px;padding:9px 12px;font-size:13px}
+  .reco .btn-mapa{margin-top:13px;background:#fff;color:var(--verde-escuro)}
+  .comp{background:#fff;border-radius:12px;box-shadow:var(--sombra);overflow:hidden;margin-bottom:18px}
+  .comp-tit{padding:13px 15px 4px;font-weight:700;color:var(--verde-escuro);font-size:15px}
+  .comp-linha{display:flex;align-items:center;gap:12px;padding:12px 15px;border-bottom:1px solid var(--linha)}
+  .comp-linha:last-child{border-bottom:none}
+  .comp-linha.melhor{background:#f0f9f3}
+  .comp-linha .pos{width:26px;height:26px;border-radius:50%;background:var(--verde-papel);display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--verde-escuro);flex-shrink:0}
+  .comp-linha.melhor .pos{background:var(--verde);color:#fff}
+  .comp-linha .corpo{flex:1;min-width:0}
+  .comp-linha .corpo b{color:var(--verde-escuro);font-size:14.5px}
+  .comp-linha .corpo .d{font-size:11.5px;color:var(--cinza)}
+  .comp-linha .tot{text-align:right;flex-shrink:0}
+  .comp-linha .tot .v{font-size:16px;font-weight:800;color:var(--verde-escuro)}
+  .comp-linha .tot .s{font-size:11px;color:var(--cinza)}
+
+  /* localização modal */
+  .loc-opt .ou{text-align:center;color:var(--cinza);font-size:12px;margin:14px 0}
 </style>
 </head>
 <body>
@@ -168,7 +236,10 @@
 
 <!-- PORTAL: somente cliente -->
 <div id="tela-portal" class="portal escondido">
-  <div class="portal-caixa">
+  <div class="portal-wrap">
+    <!-- CABEÇALHO: última oferta -->
+    <div id="portal-hero" class="hero-oferta"></div>
+    <div class="portal-caixa">
     <div class="portal-cabeca">
       <div class="sel">🛒</div>
       <h1>Cesta</h1>
@@ -193,12 +264,20 @@
         <button class="btn full" onclick="criarConta()">Criar minha conta</button>
       </div>
     </div>
+    </div>
+  </div>
+  <!-- RODAPÉ: demais ofertas + patrocinadas em carrossel -->
+  <div id="portal-rodape" class="car-faixa escondido">
+    <div class="car-cab"><div class="t" id="portal-car-tit">Mais ofertas</div>
+      <div class="nav"><button onclick="carMover('portal',-1)">‹</button><button onclick="carMover('portal',1)">›</button></div></div>
+    <div class="car-janela"><div class="car-trilho" id="portal-car"></div></div>
   </div>
 </div>
 
 <div id="topo" class="topo escondido">
   <div class="marca"><span class="cesta">🛒</span><span>Cesta</span></div>
   <div class="dir">
+    <button class="loc-btn" id="loc-btn" onclick="abrirLocal()">📍 <span id="loc-label">definir local</span></button>
     <span class="ao-vivo" id="ao-vivo"><span class="pt"></span> ofertas ao vivo</span>
     <div class="quem"><span>olá,</span><b id="topo-nome"></b></div>
     <button class="btn-sair" onclick="sair()">Sair</button>
@@ -266,9 +345,33 @@ window.fecharModal=fecharModal;
 /* ====== sessão (somente cliente) ====== */
 let sessao=null;
 let carrinho=[];
-let cacheProdutos=[], cacheOfertas=[], cacheMercados={};
+let cacheProdutos=[], cacheOfertas=[], cacheMercados={}, cachePatrocinados=[];
 let abaCliente="comprar", filtroMerc="todos", filtroCat="todas", termoBusca="";
-let unsubProdutos=null, unsubOfertas=null, unsubMercados=null;
+let unsubProdutos=null, unsubOfertas=null, unsubMercados=null, unsubPatro=null;
+let localCliente=null;   // {lat,lng,label,cep}
+
+/* ====== utilidades de comparação/distância ====== */
+function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();}
+const precoEf=p=>(p.emPromocao&&p.precoPromocional>0)?p.precoPromocional:p.preco;
+function distKm(a,b){
+  if(!a||!b||a.lat==null||b.lat==null) return null;
+  const R=6371,r=Math.PI/180,dLat=(b.lat-a.lat)*r,dLng=(b.lng-a.lng)*r;
+  const x=Math.sin(dLat/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+const distLabel=k=>k==null?"—":(k<1?`${Math.round(k*1000)} m`:`${k.toFixed(1)} km`);
+function mesmaCoisa(a,b){
+  const x=norm(a),y=norm(b);
+  if(!x||!y) return false;
+  if(x===y) return true;
+  if(x.length>=4&&y.includes(x))return true;
+  if(y.length>=4&&x.includes(y))return true;
+  const px=x.split(" ").filter(w=>w.length>2),py=y.split(" ").filter(w=>w.length>2);
+  const comuns=px.filter(w=>py.includes(w));
+  return comuns.length>=2 && comuns.length>=Math.min(px.length,py.length)-1;
+}
+function carregarLocal(){ try{localCliente=JSON.parse(localStorage.getItem("cesta_local"))||null;}catch(e){localCliente=null;} }
+function salvarLocal(){ try{localStorage.setItem("cesta_local",JSON.stringify(localCliente));}catch(e){} }
 
 function trocarAba(qual){
   $("#aba-entrar").classList.toggle("on",qual==="entrar");
@@ -305,20 +408,23 @@ async function criarConta(){
 
 function sair(){
   sessao=null; carrinho=[];
-  if(unsubProdutos)unsubProdutos(); if(unsubOfertas)unsubOfertas(); if(unsubMercados)unsubMercados();
-  unsubProdutos=unsubOfertas=unsubMercados=null;
+  if(unsubProdutos)unsubProdutos(); if(unsubOfertas)unsubOfertas(); if(unsubMercados)unsubMercados(); if(unsubPatro)unsubPatro();
+  unsubProdutos=unsubOfertas=unsubMercados=unsubPatro=null;
   try{ localStorage.removeItem("cesta_c_sessao"); }catch(e){}
   $("#topo").classList.add("escondido"); $("#conteudo").classList.add("escondido");
   $("#tela-portal").classList.remove("escondido");
   $("#entrar-email").value=""; $("#entrar-senha").value="";
+  montarPortalOfertas();
 }
 
 function entrarApp(){
   try{ localStorage.setItem("cesta_c_sessao",JSON.stringify(sessao)); }catch(e){}
   $("#tela-portal").classList.add("escondido");
+  pararCarrossel("portal");
   $("#topo").classList.remove("escondido");
   $("#conteudo").classList.remove("escondido");
   $("#topo-nome").textContent=sessao.nome;
+  carregarLocal(); atualizarLocLabel();
   ligarSincronismo();   // tempo real
   telaCliente();
 }
@@ -339,6 +445,10 @@ function ligarSincronismo(){
     cacheOfertas=snap.docs.map(d=>({id:d.id,...d.data()}));
     if(sessao && abaCliente==="comprar") renderBanners();
   });
+  unsubPatro=onSnapshot(collection(db,"patrocinados"),snap=>{
+    cachePatrocinados=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(sessao) montarRodapePatro();
+  },err=>{ /* coleção pode não ter permissão ainda */ });
 }
 
 /* ====== navegação ====== */
@@ -350,10 +460,12 @@ function telaCliente(){
       <button class="${abaCliente==='lista'?'on':''}" onclick="irCliente('lista')">🧺 Minha lista${nQtd?` (${nQtd})`:""}</button>
       <button class="${abaCliente==='historico'?'on':''}" onclick="irCliente('historico')">🕘 Histórico</button>
     </div>
-    <div id="cliente-corpo"></div>`;
+    <div id="cliente-corpo"></div>
+    <div id="rodape-patro" class="rodape-patro escondido"></div>`;
   if(abaCliente==="comprar") renderComprar();
   else if(abaCliente==="lista") renderLista();
   else renderHistorico();
+  montarRodapePatro();
 }
 function irCliente(aba){ abaCliente=aba; telaCliente(); }
 
@@ -452,6 +564,7 @@ function renderLista(){
 
   let html=`<div class="titulo-secao"><div><h2>Minha lista de compras</h2><div class="sub">Toque no quadradinho para marcar o que já pegou</div></div>
     <button class="btn fantasma peq" onclick="limparLista()">Limpar lista</button></div>`;
+  html+=recomendacaoHTML();
   for(const [merc,itens] of Object.entries(grupos)){
     html+=`<div style="margin:6px 0 10px;font-weight:700;color:var(--verde-escuro);font-size:14px">${itens[0].mercadoEmoji||"🏬"} ${esc(merc||"Loja")}</div><div class="grade" style="margin-bottom:18px">`;
     for(const i of itens){
@@ -545,6 +658,160 @@ function repetirCompra(k){
   toast("Itens adicionados à lista atual."); abaCliente="lista"; telaCliente();
 }
 
+/* ====== CARROSSEL / OFERTAS DO PORTAL / RODAPÉ PATROCINADO ====== */
+const CAR={};
+function ofertaParaCard(o){const m=cacheMercados[o.supermercadoId];return {tipo:"oferta",titulo:o.titulo,descricao:o.descricao,validade:o.validade,foto:o.foto,merc:m?m.nome:""};}
+function patroParaCard(p){return {tipo:"patro",titulo:p.titulo,descricao:p.descricao,validade:p.validade,foto:p.foto,link:p.link};}
+function cardCarrosselHTML(c){
+  const foto=c.foto?`<div class="bg" style="background-image:url('${c.foto}')"></div>`:"";
+  const tag=c.tipo==="patro"?`<span class="tagp pa">Patrocinado</span>`:`<span class="tagp of">Oferta</span>`;
+  return `<div class="car-card ${c.tipo==="patro"?"patro":""} ${c.foto?"tem-foto":""}" ${c.link?`onclick="window.open('${esc(c.link)}','_blank')" style="cursor:pointer"`:""}>
+    ${foto}${tag}<h4>${esc(c.titulo)}</h4><p>${esc(c.descricao||"")}</p>${c.validade?`<div class="v">${esc(c.validade)}</div>`:(c.merc?`<div class="v">${esc(c.merc)}</div>`:"")}
+  </div>`;
+}
+function montarCarrossel(nome,cards){
+  const trilho=$("#"+nome+"-car"); if(!trilho) return;
+  pararCarrossel(nome);
+  if(!cards.length){ trilho.innerHTML=`<div class="car-card" style="opacity:.75"><h4>Sem ofertas no momento</h4><p>Volte em breve para novas promoções.</p></div>`; CAR[nome]={idx:0,n:1,timer:null}; return; }
+  trilho.innerHTML=cards.map(cardCarrosselHTML).join("");
+  CAR[nome]={idx:0,n:cards.length,timer:null};
+  if(cards.length>1) iniciarCarrossel(nome);
+}
+function passoCarrossel(nome){
+  const trilho=$("#"+nome+"-car"),st=CAR[nome]; if(!trilho||!st) return;
+  st.idx=(st.idx+1)%st.n; const card=trilho.children[0]; if(!card) return;
+  trilho.style.transform=`translateX(${-st.idx*(card.getBoundingClientRect().width+13)}px)`;
+}
+function iniciarCarrossel(nome){ const st=CAR[nome]; if(!st) return; pararCarrossel(nome); st.timer=setInterval(()=>passoCarrossel(nome),4200); }
+function pararCarrossel(nome){ if(CAR[nome]&&CAR[nome].timer){clearInterval(CAR[nome].timer);CAR[nome].timer=null;} }
+function carMover(nome,dir){
+  const trilho=$("#"+nome+"-car"),st=CAR[nome]; if(!trilho||!st) return;
+  st.idx=(st.idx+dir+st.n)%st.n; const card=trilho.children[0]; if(!card) return;
+  trilho.style.transform=`translateX(${-st.idx*(card.getBoundingClientRect().width+13)}px)`;
+  iniciarCarrossel(nome);
+}
+function montarPortalOfertas(){
+  const ofertas=cacheOfertas.slice();
+  const ultima=ofertas[ofertas.length-1];
+  const hero=$("#portal-hero"); if(!hero) return;
+  if(ultima){
+    const m=cacheMercados[ultima.supermercadoId];
+    const f=ultima.foto?`<div class="bg" style="background-image:url('${ultima.foto}')"></div>`:"";
+    hero.innerHTML=`${f}<span class="et">⚡ Oferta em destaque</span><h2>${esc(ultima.titulo)}</h2><p>${esc(ultima.descricao||"")}</p>
+      <div class="meta">${m?`<span>🏬 ${esc(m.nome)}</span>`:""}${ultima.validade?`<span>🗓️ ${esc(ultima.validade)}</span>`:""}</div>`;
+  }else{
+    hero.innerHTML=`<span class="et">🛒 Cesta</span><h2>Compre pelo melhor preço</h2><p>Monte sua lista e descubra onde comprar mais barato e mais perto de você.</p>`;
+  }
+  const demais=ofertas.slice(0,Math.max(0,ofertas.length-1)).reverse().map(ofertaParaCard);
+  const patro=cachePatrocinados.filter(p=>p.ativo).map(patroParaCard);
+  const cards=[...demais,...patro];
+  const rod=$("#portal-rodape");
+  if(cards.length){ rod.classList.remove("escondido"); $("#portal-car-tit").textContent=patro.length?"Mais ofertas e parceiros":"Mais ofertas"; montarCarrossel("portal",cards); }
+  else rod.classList.add("escondido");
+}
+function montarRodapePatro(){
+  const box=$("#rodape-patro"); if(!box) return;
+  const patro=cachePatrocinados.filter(p=>p.ativo).map(patroParaCard);
+  if(!patro.length){ box.classList.add("escondido"); box.innerHTML=""; return; }
+  box.classList.remove("escondido");
+  box.innerHTML=`<div class="et-rod">Patrocinado</div><div class="car-janela" style="padding-left:0;padding-right:0"><div class="car-trilho" id="app-car"></div></div>`;
+  montarCarrossel("app",patro);
+}
+
+/* ====== LOCALIZAÇÃO DO CLIENTE ====== */
+function atualizarLocLabel(){ const l=$("#loc-label"); if(l) l.textContent=localCliente?localCliente.label:"definir local"; }
+function abrirLocal(){
+  abrirModal("Sua localização",`
+    <p style="color:var(--cinza);font-size:14px;margin-bottom:14px">Usamos sua localização só para mostrar os mercados mais próximos e calcular distâncias na recomendação.</p>
+    <div class="loc-opt">
+      <button class="btn full" id="loc-gps">📍 Usar minha localização atual</button>
+      <div class="ou">— ou informe seu CEP —</div>
+      <div class="campo"><input id="loc-cep" placeholder="00000-000" inputmode="numeric" maxlength="9" value="${localCliente&&localCliente.cep?esc(localCliente.cep):""}"></div>
+      <button class="btn fantasma full" id="loc-cep-btn">Buscar pelo CEP</button>
+    </div>
+    <div id="loc-status" style="font-size:13px;margin-top:14px;text-align:center;color:var(--cinza)"></div>
+  `);
+  const st=$("#loc-status");
+  $("#loc-gps").onclick=()=>{
+    if(!navigator.geolocation){ st.textContent="Seu navegador não suporta geolocalização."; return; }
+    st.textContent="Obtendo localização…";
+    navigator.geolocation.getCurrentPosition(
+      pos=>{ localCliente={lat:pos.coords.latitude,lng:pos.coords.longitude,label:"minha localização"}; salvarLocal(); atualizarLocLabel(); toast("Localização definida."); fecharModal(); telaCliente(); },
+      ()=>{ st.textContent="Não foi possível obter sua localização. Use o CEP."; },
+      {enableHighAccuracy:true,timeout:9000}
+    );
+  };
+  $("#loc-cep-btn").onclick=async()=>{
+    const cep=$("#loc-cep").value.replace(/\D/g,"");
+    if(cep.length!==8){ st.textContent="CEP deve ter 8 dígitos."; return; }
+    st.textContent="Buscando…";
+    try{
+      const r=await fetch(`https://viacep.com.br/ws/${cep}/json/`); const j=await r.json();
+      if(j.erro){ st.textContent="CEP não encontrado."; return; }
+      let geo=null;
+      try{ const g=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(`${j.bairro}, ${j.localidade}, ${j.uf}, Brasil`)}`); const gj=await g.json(); if(gj.length) geo={lat:parseFloat(gj[0].lat),lng:parseFloat(gj[0].lon)}; }catch(e){}
+      if(!geo){ try{ const g=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(`${j.localidade}, ${j.uf}, Brasil`)}`); const gj=await g.json(); if(gj.length) geo={lat:parseFloat(gj[0].lat),lng:parseFloat(gj[0].lon)}; }catch(e){} }
+      if(!geo){ st.textContent="Achei o CEP, mas não a localização exata. Tente o GPS."; return; }
+      localCliente={lat:geo.lat,lng:geo.lng,cep,label:`${j.bairro?j.bairro+", ":""}${j.localidade}/${j.uf}`};
+      salvarLocal(); atualizarLocLabel(); toast("Localização definida."); fecharModal(); telaCliente();
+    }catch(e){ st.textContent="Erro ao buscar o CEP. Tente novamente."; }
+  };
+}
+
+/* ====== RECOMENDAÇÃO: melhor lugar para comprar ====== */
+function calcularRecomendacao(){
+  const itens=carrinho; if(!itens.length) return [];
+  const resultados=Object.values(cacheMercados).map(m=>{
+    const prodsLoja=cacheProdutos.filter(p=>p.supermercadoId===m.id);
+    let total=0; const encontrados=[],faltando=[];
+    for(const it of itens){
+      const cands=prodsLoja.filter(p=>mesmaCoisa(p.nome,it.nome));
+      if(cands.length){ const melhor=cands.reduce((a,b)=>precoEf(a)<=precoEf(b)?a:b); total+=precoEf(melhor)*(it.qtd||1); encontrados.push(it); }
+      else faltando.push(it);
+    }
+    const d=distKm(localCliente,(m.lat!=null)?{lat:m.lat,lng:m.lng}:null);
+    return {loja:m,total,cobertura:encontrados.length,faltando,dist:d};
+  }).filter(r=>r.cobertura>0);
+  resultados.sort((a,b)=>{
+    if(b.cobertura!==a.cobertura) return b.cobertura-a.cobertura;
+    if(a.total!==b.total) return a.total-b.total;
+    if(a.dist==null&&b.dist==null) return 0; if(a.dist==null) return 1; if(b.dist==null) return -1; return a.dist-b.dist;
+  });
+  return resultados;
+}
+function recomendacaoHTML(){
+  const recos=calcularRecomendacao();
+  const nItensDistintos=carrinho.length;
+  if(!recos.length) return `<div class="cartao" style="text-align:center;color:var(--cinza);margin-bottom:16px">Adicione produtos para ver o melhor lugar para comprar.</div>`;
+  const best=recos[0];
+  const completos=recos.filter(r=>r.cobertura===nItensDistintos);
+  const base=completos.length?completos:recos;
+  const economia=Math.max(...base.map(r=>r.total))-best.total;
+  let html=`<div class="reco">
+    <div class="et">🏆 Melhor lugar para comprar</div>
+    <h3>${best.loja.emoji||"🏬"} ${esc(best.loja.nome)}</h3>
+    <div class="cob">${best.cobertura} de ${nItensDistintos} itens disponíveis aqui${best.faltando.length?` · falta: ${best.faltando.map(f=>esc(f.nome)).join(", ")}`:""}</div>
+    <div class="linhas">
+      <div class="bloco"><div class="n">${reais(best.total)}</div><div class="r">total estimado</div></div>
+      <div class="bloco"><div class="n">${distLabel(best.dist)}</div><div class="r">${localCliente?"distância":"defina seu local"}</div></div>
+    </div>
+    ${economia>0.01?`<div class="eco">💰 Economia de até <b>${reais(economia)}</b> frente ao mercado mais caro.</div>`:""}
+    ${best.loja.lat!=null?`<a class="btn btn-mapa" href="https://www.google.com/maps/dir/?api=1&destination=${best.loja.lat},${best.loja.lng}" target="_blank">🗺️ Como chegar</a>`:`<button class="btn btn-mapa" onclick="abrirLocal()">📍 Definir minha localização</button>`}
+  </div>`;
+  if(recos.length>1){
+    html+=`<div class="comp"><div class="comp-tit">Comparar mercados</div>`;
+    recos.forEach((r,i)=>{
+      html+=`<div class="comp-linha ${i===0?'melhor':''}">
+        <div class="pos">${i===0?'🏆':i+1}</div>
+        <div class="corpo"><b>${esc(r.loja.nome)}</b><div class="d">${r.cobertura}/${nItensDistintos} itens${r.faltando.length?` · falta ${r.faltando.length}`:" · completo"} · ${distLabel(r.dist)}</div></div>
+        <div class="tot"><div class="v">${reais(r.total)}</div><div class="s">estimado</div></div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  return html;
+}
+
 /* ====== seed do cliente de teste (cria se não existir) ====== */
 async function semearCliente(){
   try{
@@ -557,18 +824,25 @@ async function semearCliente(){
 Object.assign(window,{
   trocarAba,fazerLogin,criarConta,sair,irCliente,setFiltroMerc,setFiltroCat,buscar,
   addCarrinho,marcarItem,mudarQtd,removerItem,limparLista,baixarLista,finalizarCompra,
-  toggleHist,repetirCompra,fecharModal
+  toggleHist,repetirCompra,fecharModal,carMover,abrirLocal
 });
 
 (async function init(){
   try{
     await semearCliente();
+    carregarLocal();
+    // pré-carrega mercados, ofertas e patrocinadas p/ o cabeçalho e carrossel da tela de login
+    try{
+      const [merc,ofs,pat]=await Promise.all([fsAll("supermercados"),fsAll("ofertas"),fsAll("patrocinados").catch(()=>[])]);
+      cacheMercados={}; merc.forEach(m=>cacheMercados[m.id]=m);
+      cacheOfertas=ofs; cachePatrocinados=pat;
+    }catch(e){ console.warn("pré-carga de ofertas falhou",e); }
     const s=(()=>{try{return JSON.parse(localStorage.getItem("cesta_c_sessao"));}catch(e){return null;}})();
     if(s){
       const conta=await fsGet("clientes",s.id);
       if(conta){ sessao={id:conta.id,nome:conta.nome}; entrarApp(); }
-      else $("#tela-portal").classList.remove("escondido");
-    }else $("#tela-portal").classList.remove("escondido");
+      else { montarPortalOfertas(); $("#tela-portal").classList.remove("escondido"); }
+    }else { montarPortalOfertas(); $("#tela-portal").classList.remove("escondido"); }
   }catch(e){
     console.error(e);
     document.getElementById("carregando").innerHTML=`<div style="text-align:center;padding:30px;max-width:420px">
