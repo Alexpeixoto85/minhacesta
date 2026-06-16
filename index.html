@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cesta — sua lista de compras</title>
+<style>
+  :root{
+    --verde-fundo:#0f2e22;--verde-escuro:#1b4332;--verde:#2d6a4f;--verde-claro:#40916c;
+    --verde-suave:#74c69d;--verde-papel:#f3f7f0;--creme:#fbfdf8;--oferta:#ffb703;--oferta-forte:#fb8500;
+    --preco-promo:#d62828;--tinta:#13241c;--cinza:#647067;--linha:#e0e8df;--branco:#fff;
+    --sombra:0 1px 2px rgba(15,46,34,.06),0 8px 24px rgba(15,46,34,.08);--raio:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:var(--verde-papel);color:var(--tinta);line-height:1.5;min-height:100vh}
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.01em;line-height:1.15}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  input,select,textarea{font-family:inherit;font-size:15px}
+  a{color:var(--verde);text-decoration:none}
+
+  .topo{background:var(--verde-fundo);color:#eaf3ec;padding:14px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;box-shadow:0 4px 16px rgba(15,46,34,.18)}
+  .marca{display:flex;align-items:center;gap:11px;font-weight:700;font-size:20px;font-family:Georgia,serif}
+  .marca .cesta{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,var(--verde-suave),var(--verde-claro));font-size:19px}
+  .topo .dir{margin-left:auto;display:flex;align-items:center;gap:12px}
+  .quem{font-size:13px;opacity:.9;text-align:right}
+  .quem b{display:block;font-size:14px}.quem span{font-size:11px;opacity:.6}
+  .btn-sair{background:rgba(255,255,255,.1);color:#eaf3ec;padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600}
+  .btn-sair:hover{background:rgba(255,255,255,.2)}
+  main{max-width:1080px;margin:0 auto;padding:24px 18px 90px}
+
+  .btn{background:var(--verde);color:#fff;padding:11px 20px;border-radius:10px;font-weight:600;font-size:15px;transition:.15s;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+  .btn:hover{background:var(--verde-escuro);transform:translateY(-1px)}.btn:active{transform:translateY(0)}
+  .btn.full{width:100%}
+  .btn.fantasma{background:transparent;color:var(--verde);box-shadow:inset 0 0 0 1.5px var(--verde-claro)}
+  .btn.fantasma:hover{background:var(--verde-papel)}
+  .btn.oferta{background:var(--oferta-forte)}.btn.oferta:hover{background:#e07600}
+  .btn.peq{padding:7px 13px;font-size:13px;border-radius:8px}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+  .cartao{background:var(--branco);border-radius:var(--raio);box-shadow:var(--sombra);padding:22px}
+  .campo{margin-bottom:14px}
+  .campo label{display:block;font-size:13px;font-weight:600;color:var(--verde-escuro);margin-bottom:5px}
+  .campo input{width:100%;padding:11px 13px;border:1.5px solid var(--linha);border-radius:10px;background:var(--creme);color:var(--tinta)}
+  .campo input:focus{outline:none;border-color:var(--verde-claro);background:#fff}
+
+  .portal{min-height:calc(100vh - 60px);display:grid;place-items:center;padding:30px 18px}
+  .portal-caixa{width:100%;max-width:420px}
+  .portal-cabeca{text-align:center;margin-bottom:24px}
+  .portal-cabeca .sel{width:64px;height:64px;border-radius:18px;margin:0 auto 14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--verde-suave),var(--verde-claro));font-size:32px;box-shadow:var(--sombra)}
+  .portal-cabeca h1{font-size:30px;color:var(--verde-escuro)}
+  .portal-cabeca p{color:var(--cinza);margin-top:4px;font-size:14px}
+  .abas{display:flex;background:var(--verde-papel);border-radius:11px;padding:4px;margin-bottom:20px;gap:4px}
+  .abas button{flex:1;padding:9px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--cinza)}
+  .abas button.on{background:#fff;color:var(--verde-escuro);box-shadow:0 1px 4px rgba(15,46,34,.1)}
+  .dica-login{font-size:12px;color:var(--cinza);text-align:center;margin-top:14px}
+  .dica-login code{background:var(--verde-papel);padding:2px 6px;border-radius:5px;color:var(--verde-escuro);font-size:11.5px}
+
+  .barra-secoes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+  .barra-secoes button{padding:9px 16px;border-radius:10px;font-weight:600;font-size:14px;color:var(--cinza);background:#fff;box-shadow:var(--sombra)}
+  .barra-secoes button.on{background:var(--verde-escuro);color:#fff}
+  .titulo-secao{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+  .titulo-secao h2{font-size:23px;color:var(--verde-escuro)}
+  .titulo-secao .sub{font-size:13px;color:var(--cinza);margin-top:2px}
+
+  .grade{display:grid;gap:14px}
+  .grade.col3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:780px){.grade.col3{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.grade.col3{grid-template-columns:repeat(2,1fr)}}
+
+  .vazio{text-align:center;padding:46px 20px;color:var(--cinza)}
+  .vazio .ic{font-size:42px;opacity:.5;margin-bottom:10px}
+  .vazio p{font-size:14.5px}.vazio .btn{margin-top:16px}
+
+  .prod{background:#fff;border-radius:14px;box-shadow:var(--sombra);overflow:hidden;display:flex;flex-direction:column;position:relative;transition:.15s}
+  .prod:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(15,46,34,.08),0 14px 30px rgba(15,46,34,.12)}
+  .prod .foto{height:118px;background:var(--verde-papel);display:grid;place-items:center;font-size:44px;position:relative}
+  .prod .selo{position:absolute;top:9px;left:9px;background:var(--preco-promo);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;box-shadow:0 2px 6px rgba(214,40,40,.4)}
+  .prod .conteudo{padding:13px 14px;flex:1;display:flex;flex-direction:column}
+  .prod .pnome{font-weight:600;font-size:14.5px;color:var(--verde-escuro);line-height:1.25}
+  .prod .pcat{font-size:11.5px;color:var(--cinza);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+  .prod .precos{margin-top:auto;padding-top:10px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .prod .pde{font-size:13px;color:var(--cinza);text-decoration:line-through}
+  .prod .ppor{font-size:20px;font-weight:800;color:var(--verde-escuro);font-family:Georgia,serif}
+  .prod .ppor.promo{color:var(--preco-promo)}
+  .prod .add{margin:0 14px 14px;background:var(--verde-papel);color:var(--verde-escuro);border-radius:9px;padding:9px;font-weight:600;font-size:13.5px;transition:.15s}
+  .prod .add:hover{background:var(--verde);color:#fff}
+  .prod .add.no-carrinho{background:var(--verde-escuro);color:#fff}
+
+  .banners{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-bottom:22px}
+  .banner{border-radius:16px;padding:20px 22px;color:#3a2400;position:relative;overflow:hidden;min-height:130px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(120deg,var(--oferta),var(--oferta-forte));box-shadow:0 6px 20px rgba(251,133,0,.28)}
+  .banner.verde{background:linear-gradient(120deg,#74c69d,#2d6a4f);color:#06281c;box-shadow:0 6px 20px rgba(45,106,79,.28)}
+  .banner::after{content:"";position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.18)}
+  .banner::before{content:"";position:absolute;right:18px;bottom:-26px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.13)}
+  .banner .et{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+  .banner h3{font-size:23px;margin:6px 0 4px;position:relative;z-index:1}
+  .banner p{font-size:13.5px;position:relative;z-index:1;max-width:80%}
+  .banner .merc{font-size:12px;margin-top:10px;font-weight:700;position:relative;z-index:1}
+  .banner .val{position:absolute;bottom:14px;right:18px;font-size:11px;font-weight:600;opacity:.8;z-index:1}
+
+  .item-cart{background:#fff;border-radius:11px;box-shadow:var(--sombra);padding:12px 14px;display:flex;align-items:center;gap:13px}
+  .item-cart.marcado{opacity:.55}.item-cart.marcado .ic-nome{text-decoration:line-through}
+  .check{width:24px;height:24px;border-radius:7px;border:2px solid var(--verde-claro);flex-shrink:0;display:grid;place-items:center;cursor:pointer;background:#fff;transition:.12s;font-size:14px;color:#fff}
+  .check.on{background:var(--verde);border-color:var(--verde)}
+  .item-cart .emoji{font-size:26px}
+  .item-cart .corpo{flex:1;min-width:0}
+  .item-cart .ic-nome{font-weight:600;color:var(--verde-escuro);font-size:14.5px}
+  .item-cart .ic-meta{font-size:12px;color:var(--cinza)}
+  .qtd{display:flex;align-items:center;gap:8px}
+  .qtd button{width:28px;height:28px;border-radius:8px;background:var(--verde-papel);color:var(--verde-escuro);font-weight:700;font-size:16px}
+  .qtd button:hover{background:var(--verde-suave)}
+  .qtd span{min-width:22px;text-align:center;font-weight:700;font-size:14px}
+  .item-cart .preco-l{font-weight:700;color:var(--verde-escuro);font-size:14px;min-width:74px;text-align:right}
+  .item-cart .lixo{color:var(--cinza);font-size:18px;padding:4px}.item-cart .lixo:hover{color:var(--preco-promo)}
+
+  .resumo{background:var(--verde-fundo);color:#eaf3ec;border-radius:14px;padding:20px;position:sticky;bottom:14px;margin-top:6px}
+  .resumo .l{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;opacity:.85}
+  .resumo .total{font-size:24px;font-weight:800;font-family:Georgia,serif;display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid rgba(255,255,255,.15);padding-top:12px;margin-top:6px}
+  .resumo .botoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  @media(max-width:480px){.resumo .botoes{grid-template-columns:1fr}}
+
+  .hist-cartao{background:#fff;border-radius:13px;box-shadow:var(--sombra);overflow:hidden}
+  .hist-cabeca{padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
+  .hist-cabeca:hover{background:var(--verde-papel)}
+  .hist-cabeca .data{font-weight:700;color:var(--verde-escuro)}
+  .hist-cabeca .resumo-h{font-size:12.5px;color:var(--cinza);margin-top:2px}
+  .hist-cabeca .vtotal{font-weight:800;color:var(--verde);font-family:Georgia,serif;font-size:17px}
+  .hist-itens{padding:0 18px;max-height:0;overflow:hidden;transition:.2s}
+  .hist-itens.aberto{padding:6px 18px 16px;max-height:1400px}
+  .hist-itens .li{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--linha)}
+
+  .filtros{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;-webkit-overflow-scrolling:touch}
+  .chip{white-space:nowrap;padding:8px 15px;border-radius:30px;font-size:13px;font-weight:600;background:#fff;color:var(--cinza);box-shadow:var(--sombra);flex-shrink:0}
+  .chip.on{background:var(--verde);color:#fff}
+  .busca-cx{position:relative;margin-bottom:16px}
+  .busca-cx input{width:100%;padding:11px 13px 11px 40px;border:1.5px solid var(--linha);border-radius:10px;background:#fff}
+  .busca-cx input:focus{outline:none;border-color:var(--verde-claro)}
+  .busca-cx .lupa{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--cinza)}
+
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px}
+  .tag.promo{background:#fdeaea;color:var(--preco-promo)}
+
+  .modal-fundo{position:fixed;inset:0;background:rgba(15,46,34,.55);display:none;place-items:center;z-index:100;padding:18px;backdrop-filter:blur(2px)}
+  .modal-fundo.on{display:grid}
+  .modal{background:#fff;border-radius:18px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .modal-cabeca{padding:18px 22px;border-bottom:1px solid var(--linha);display:flex;align-items:center;justify-content:space-between}
+  .modal-cabeca h3{font-size:19px;color:var(--verde-escuro)}.modal-cabeca .x{font-size:24px;color:var(--cinza);line-height:1}
+  .modal-corpo{padding:22px}.modal-pe{padding:0 22px 22px;display:flex;gap:10px;justify-content:flex-end}
+
+  .toast-area{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .toast{background:var(--verde-fundo);color:#eaf3ec;padding:12px 20px;border-radius:30px;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:sobe .3s;display:flex;align-items:center;gap:8px}
+  .toast.erro{background:var(--preco-promo)}
+  @keyframes sobe{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  .carregando{position:fixed;inset:0;background:var(--verde-papel);display:grid;place-items:center;z-index:300}
+  .spinner{width:40px;height:40px;border:4px solid var(--linha);border-top-color:var(--verde-claro);border-radius:50%;animation:gira 1s linear infinite}
+  @keyframes gira{to{transform:rotate(360deg)}}
+  .ao-vivo{font-size:11px;color:#9fd9bf;display:inline-flex;align-items:center;gap:5px}
+  .ao-vivo .pt{width:7px;height:7px;border-radius:50%;background:#7fe0a6;box-shadow:0 0 0 0 rgba(127,224,166,.6);animation:pulso 1.8s infinite}
+  @keyframes pulso{0%{box-shadow:0 0 0 0 rgba(127,224,166,.55)}70%{box-shadow:0 0 0 7px rgba(127,224,166,0)}100%{box-shadow:0 0 0 0 rgba(127,224,166,0)}}
+  .escondido{display:none!important}
+</style>
+</head>
+<body>
+
+<div id="carregando" class="carregando"><div class="spinner"></div></div>
+
+<!-- PORTAL: somente cliente -->
+<div id="tela-portal" class="portal escondido">
+  <div class="portal-caixa">
+    <div class="portal-cabeca">
+      <div class="sel">🛒</div>
+      <h1>Cesta</h1>
+      <p>Monte sua lista, compare ofertas, economize</p>
+    </div>
+    <div class="cartao">
+      <div class="abas">
+        <button id="aba-entrar" class="on" onclick="trocarAba('entrar')">Entrar</button>
+        <button id="aba-criar" onclick="trocarAba('criar')">Criar conta</button>
+      </div>
+      <div id="form-entrar">
+        <div class="campo"><label>E-mail</label><input id="entrar-email" type="email" placeholder="seu@email.com"></div>
+        <div class="campo"><label>Senha</label><input id="entrar-senha" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()"></div>
+        <button class="btn full" onclick="fazerLogin()">Entrar</button>
+        <p class="dica-login">Conta de teste — <code>cliente@email.com</code> · <code>123</code></p>
+      </div>
+      <div id="form-criar" class="escondido">
+        <div class="campo"><label>Nome completo</label><input id="criar-nome" type="text" placeholder="Como devemos te chamar?"></div>
+        <div class="campo"><label>E-mail</label><input id="criar-email" type="email" placeholder="seu@email.com"></div>
+        <div class="campo"><label>Telefone</label><input id="criar-tel" type="tel" placeholder="(00) 00000-0000"></div>
+        <div class="campo"><label>Senha</label><input id="criar-senha" type="password" placeholder="Crie uma senha"></div>
+        <button class="btn full" onclick="criarConta()">Criar minha conta</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="topo" class="topo escondido">
+  <div class="marca"><span class="cesta">🛒</span><span>Cesta</span></div>
+  <div class="dir">
+    <span class="ao-vivo" id="ao-vivo"><span class="pt"></span> ofertas ao vivo</span>
+    <div class="quem"><span>olá,</span><b id="topo-nome"></b></div>
+    <button class="btn-sair" onclick="sair()">Sair</button>
+  </div>
+</div>
+
+<main id="conteudo" class="escondido"></main>
+
+<div id="modal-fundo" class="modal-fundo" onclick="if(event.target===this)fecharModal()">
+  <div class="modal">
+    <div class="modal-cabeca"><h3 id="modal-titulo">Título</h3><button class="x" onclick="fecharModal()">×</button></div>
+    <div class="modal-corpo" id="modal-corpo"></div>
+    <div class="modal-pe" id="modal-pe"></div>
+  </div>
+</div>
+<div class="toast-area" id="toast-area"></div>
+
+<script type="module">
+/* ============================================================
+   CESTA · SITE DO CLIENTE — Firebase Firestore (somente cliente)
+   ============================================================ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import {
+  getFirestore, collection, doc, getDoc, getDocs, addDoc,
+  query, where, onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAI438jAhAjqJUh16cCeQK7jN2xOy5N2LQ",
+  authDomain: "minha-cesta-a9292.firebaseapp.com",
+  projectId: "minha-cesta-a9292",
+  storageBucket: "minha-cesta-a9292.firebasestorage.app",
+  messagingSenderId: "266680672755",
+  appId: "1:266680672755:web:64905352f65a93f3187286",
+  measurementId: "G-DBTYX7WSWP"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+async function fsAll(col){ const s=await getDocs(collection(db,col)); return s.docs.map(d=>({id:d.id,...d.data()})); }
+async function fsGet(col,id){ const s=await getDoc(doc(db,col,id)); return s.exists()?{id:s.id,...s.data()}:null; }
+async function fsAdd(col,obj){ const r=await addDoc(collection(db,col),obj); return r.id; }
+async function fsWhere(col,campo,val){ const s=await getDocs(query(collection(db,col),where(campo,"==",val))); return s.docs.map(d=>({id:d.id,...d.data()})); }
+
+const $ = s=>document.querySelector(s);
+const reais = v=>"R$ "+(Number(v)||0).toFixed(2).replace(".",",");
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function toast(msg,erro=false){
+  const t=document.createElement("div"); t.className="toast"+(erro?" erro":"");
+  t.innerHTML=(erro?"⚠️ ":"✓ ")+esc(msg); $("#toast-area").appendChild(t);
+  setTimeout(()=>{t.style.opacity="0";t.style.transition=".3s";setTimeout(()=>t.remove(),300);},2600);
+}
+function abrirModal(t,c,r=""){ $("#modal-titulo").textContent=t; $("#modal-corpo").innerHTML=c; $("#modal-pe").innerHTML=r; $("#modal-fundo").classList.add("on"); }
+function fecharModal(){ $("#modal-fundo").classList.remove("on"); }
+function confirmar(t,txt,fn,rotulo="Confirmar"){
+  abrirModal(t,`<p style="color:var(--cinza);font-size:14.5px">${esc(txt)}</p>`,
+    `<button class="btn fantasma" onclick="fecharModal()">Cancelar</button><button class="btn" style="background:var(--preco-promo)" id="btn-conf">${esc(rotulo)}</button>`);
+  $("#btn-conf").onclick=async()=>{ await fn(); fecharModal(); };
+}
+function vazioHTML(ic,t,p,onclick="",botao=""){
+  return `<div class="vazio"><div class="ic">${ic}</div><b style="color:var(--verde-escuro);font-size:16px">${esc(t)}</b><p>${esc(p)}</p>${botao?`<button class="btn" onclick="${onclick}">${esc(botao)}</button>`:""}</div>`;
+}
+window.fecharModal=fecharModal;
+
+/* ====== sessão (somente cliente) ====== */
+let sessao=null;
+let carrinho=[];
+let cacheProdutos=[], cacheOfertas=[], cacheMercados={};
+let abaCliente="comprar", filtroMerc="todos", filtroCat="todas", termoBusca="";
+let unsubProdutos=null, unsubOfertas=null, unsubMercados=null;
+
+function trocarAba(qual){
+  $("#aba-entrar").classList.toggle("on",qual==="entrar");
+  $("#aba-criar").classList.toggle("on",qual==="criar");
+  $("#form-entrar").classList.toggle("escondido",qual!=="entrar");
+  $("#form-criar").classList.toggle("escondido",qual!=="criar");
+}
+
+async function fazerLogin(){
+  const email=$("#entrar-email").value.trim().toLowerCase(), senha=$("#entrar-senha").value;
+  if(!email||!senha) return toast("Preencha e-mail e senha.",true);
+  try{
+    const achados=await fsWhere("clientes","email",email);
+    const conta=achados[0];
+    if(!conta||conta.senha!==senha) return toast("E-mail ou senha incorretos.",true);
+    sessao={id:conta.id,nome:conta.nome};
+    entrarApp();
+  }catch(e){ console.error(e); toast("Erro ao conectar à nuvem.",true); }
+}
+
+async function criarConta(){
+  const nome=$("#criar-nome").value.trim(), email=$("#criar-email").value.trim().toLowerCase();
+  const tel=$("#criar-tel").value.trim(), senha=$("#criar-senha").value;
+  if(!nome||!email||!senha) return toast("Preencha nome, e-mail e senha.",true);
+  try{
+    const existe=await fsWhere("clientes","email",email);
+    if(existe.length) return toast("Esse e-mail já tem cadastro.",true);
+    const id=await fsAdd("clientes",{nome,email,senha,telefone:tel});
+    sessao={id,nome};
+    toast("Conta criada! Bem-vindo(a).");
+    entrarApp();
+  }catch(e){ console.error(e); toast("Erro ao criar conta.",true); }
+}
+
+function sair(){
+  sessao=null; carrinho=[];
+  if(unsubProdutos)unsubProdutos(); if(unsubOfertas)unsubOfertas(); if(unsubMercados)unsubMercados();
+  unsubProdutos=unsubOfertas=unsubMercados=null;
+  try{ localStorage.removeItem("cesta_c_sessao"); }catch(e){}
+  $("#topo").classList.add("escondido"); $("#conteudo").classList.add("escondido");
+  $("#tela-portal").classList.remove("escondido");
+  $("#entrar-email").value=""; $("#entrar-senha").value="";
+}
+
+function entrarApp(){
+  try{ localStorage.setItem("cesta_c_sessao",JSON.stringify(sessao)); }catch(e){}
+  $("#tela-portal").classList.add("escondido");
+  $("#topo").classList.remove("escondido");
+  $("#conteudo").classList.remove("escondido");
+  $("#topo-nome").textContent=sessao.nome;
+  ligarSincronismo();   // tempo real
+  telaCliente();
+}
+
+/* ====== sincronismo em nuvem (tempo real) ======
+   ouve mudanças de produtos, ofertas e supermercados feitas no Gerencial
+   e atualiza a tela do cliente automaticamente */
+function ligarSincronismo(){
+  unsubMercados=onSnapshot(collection(db,"supermercados"),snap=>{
+    cacheMercados={}; snap.docs.forEach(d=>cacheMercados[d.id]={id:d.id,...d.data()});
+    if(sessao && abaCliente==="comprar") renderComprar();
+  });
+  unsubProdutos=onSnapshot(collection(db,"produtos"),snap=>{
+    cacheProdutos=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(sessao && abaCliente==="comprar") renderGradeProdutos();
+  });
+  unsubOfertas=onSnapshot(collection(db,"ofertas"),snap=>{
+    cacheOfertas=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(sessao && abaCliente==="comprar") renderBanners();
+  });
+}
+
+/* ====== navegação ====== */
+function telaCliente(){
+  const nQtd=carrinho.reduce((s,i)=>s+i.qtd,0);
+  $("#conteudo").innerHTML=`
+    <div class="barra-secoes">
+      <button class="${abaCliente==='comprar'?'on':''}" onclick="irCliente('comprar')">🛍️ Comprar</button>
+      <button class="${abaCliente==='lista'?'on':''}" onclick="irCliente('lista')">🧺 Minha lista${nQtd?` (${nQtd})`:""}</button>
+      <button class="${abaCliente==='historico'?'on':''}" onclick="irCliente('historico')">🕘 Histórico</button>
+    </div>
+    <div id="cliente-corpo"></div>`;
+  if(abaCliente==="comprar") renderComprar();
+  else if(abaCliente==="lista") renderLista();
+  else renderHistorico();
+}
+function irCliente(aba){ abaCliente=aba; telaCliente(); }
+
+/* ====== ABA COMPRAR ====== */
+function renderComprar(){
+  const c=$("#cliente-corpo");
+  if(!c) return;
+  const merc=Object.values(cacheMercados);
+  const categorias=[...new Set(cacheProdutos.map(p=>p.categoria))].sort();
+  const chipsMerc=`<button class="chip ${filtroMerc==='todos'?'on':''}" onclick="setFiltroMerc('todos')">Todos</button>`
+    + merc.map(m=>`<button class="chip ${filtroMerc===m.id?'on':''}" onclick="setFiltroMerc('${m.id}')">${m.emoji||"🏬"} ${esc(m.nome)}</button>`).join("");
+  const chipsCat=`<button class="chip ${filtroCat==='todas'?'on':''}" onclick="setFiltroCat('todas')">Todas</button>`
+    + categorias.map(cat=>`<button class="chip ${filtroCat===cat?'on':''}" onclick="setFiltroCat('${esc(cat)}')">${esc(cat)}</button>`).join("");
+
+  c.innerHTML=`
+    <div id="area-banners"></div>
+    <div class="busca-cx"><span class="lupa">🔍</span><input id="busca" placeholder="Buscar produto..." value="${esc(termoBusca)}" oninput="buscar(this.value)"></div>
+    <div class="filtros">${chipsMerc}</div>
+    <div class="filtros">${chipsCat}</div>
+    <div id="grade-prod" class="grade col3"></div>`;
+  renderBanners();
+  renderGradeProdutos();
+}
+function setFiltroMerc(v){ filtroMerc=v; renderComprar(); }
+function setFiltroCat(v){ filtroCat=v; renderComprar(); }
+let buscaTimer;
+function buscar(v){ termoBusca=v; clearTimeout(buscaTimer); buscaTimer=setTimeout(renderGradeProdutos,160); }
+
+function renderBanners(){
+  const box=$("#area-banners"); if(!box) return;
+  if(!cacheOfertas.length){ box.innerHTML=""; return; }
+  box.innerHTML=`<div class="banners">`+cacheOfertas.map(o=>{
+    const m=cacheMercados[o.supermercadoId];
+    return `<div class="banner ${o.cor==='verde'?'verde':''}">
+      <div class="et">Oferta especial</div><h3>${esc(o.titulo)}</h3><p>${esc(o.descricao||"")}</p>
+      <div class="merc">${m?(m.emoji||"🏬")+" "+esc(m.nome):""}</div>
+      ${o.validade?`<span class="val">${esc(o.validade)}</span>`:""}
+    </div>`;
+  }).join("")+`</div>`;
+}
+
+function renderGradeProdutos(){
+  const g=$("#grade-prod"); if(!g) return;
+  let lista=cacheProdutos.slice();
+  if(filtroMerc!=="todos") lista=lista.filter(p=>p.supermercadoId===filtroMerc);
+  if(filtroCat!=="todas") lista=lista.filter(p=>p.categoria===filtroCat);
+  if(termoBusca.trim()){ const t=termoBusca.toLowerCase(); lista=lista.filter(p=>p.nome.toLowerCase().includes(t)||(p.categoria||"").toLowerCase().includes(t)); }
+  lista.sort((a,b)=>(b.emPromocao?1:0)-(a.emPromocao?1:0));
+
+  if(!lista.length){ g.style.display="block"; g.innerHTML=vazioHTML("🔍","Nada encontrado","Tente outro termo, categoria ou supermercado"); return; }
+  g.style.display=""; g.className="grade col3";
+  g.innerHTML=lista.map(p=>{
+    const promo=p.emPromocao&&p.precoPromocional;
+    const m=cacheMercados[p.supermercadoId];
+    const noCarrinho=carrinho.find(i=>i.produtoId===p.id);
+    return `<div class="prod">
+      <div class="foto">${promo?`<span class="selo">${Math.round((1-p.precoPromocional/p.preco)*100)}% OFF</span>`:""}${p.emoji||"🛒"}</div>
+      <div class="conteudo">
+        <div class="pnome">${esc(p.nome)}</div>
+        <div class="pcat">${m?esc(m.nome):""} · ${esc(p.categoria||"")}</div>
+        <div class="precos">${promo?`<span class="pde">${reais(p.preco)}</span><span class="ppor promo">${reais(p.precoPromocional)}</span>`:`<span class="ppor">${reais(p.preco)}</span>`}</div>
+      </div>
+      <button class="add ${noCarrinho?'no-carrinho':''}" onclick="addCarrinho('${p.id}')">${noCarrinho?`✓ na lista (${noCarrinho.qtd})`:"+ Adicionar"}</button>
+    </div>`;
+  }).join("");
+}
+
+function addCarrinho(produtoId){
+  const p=cacheProdutos.find(x=>x.id===produtoId); if(!p) return;
+  const preco=(p.emPromocao&&p.precoPromocional)?p.precoPromocional:p.preco;
+  const m=cacheMercados[p.supermercadoId];
+  const ex=carrinho.find(i=>i.produtoId===produtoId);
+  if(ex) ex.qtd++;
+  else carrinho.push({produtoId,nome:p.nome,emoji:p.emoji,categoria:p.categoria,preco,
+    mercadoNome:m?m.nome:"",mercadoEmoji:m?m.emoji:"🏬",qtd:1,marcado:false});
+  toast(`${p.nome} na lista`);
+  renderGradeProdutos();
+  const btn=document.querySelectorAll(".barra-secoes button")[1];
+  const n=carrinho.reduce((s,i)=>s+i.qtd,0);
+  if(btn) btn.innerHTML=`🧺 Minha lista${n?` (${n})`:""}`;
+}
+
+/* ====== ABA LISTA / CARRINHO ====== */
+function renderLista(){
+  const c=$("#cliente-corpo");
+  if(!carrinho.length){
+    c.innerHTML=`<div class="titulo-secao"><div><h2>Minha lista de compras</h2><div class="sub">Monte sua lista na aba Comprar</div></div></div>
+      ${vazioHTML("🧺","Sua lista está vazia","Adicione produtos e marque cada item conforme coloca no carrinho","irCliente('comprar')","🛍️ Ir às compras")}`;
+    return;
+  }
+  const grupos={}; carrinho.forEach((i,idx)=>{(grupos[i.mercadoNome]??=[]).push({...i,idx});});
+  const total=carrinho.reduce((s,i)=>s+i.preco*i.qtd,0);
+  const marcados=carrinho.filter(i=>i.marcado);
+  const totalMarcado=marcados.reduce((s,i)=>s+i.preco*i.qtd,0);
+  const nItens=carrinho.reduce((s,i)=>s+i.qtd,0);
+
+  let html=`<div class="titulo-secao"><div><h2>Minha lista de compras</h2><div class="sub">Toque no quadradinho para marcar o que já pegou</div></div>
+    <button class="btn fantasma peq" onclick="limparLista()">Limpar lista</button></div>`;
+  for(const [merc,itens] of Object.entries(grupos)){
+    html+=`<div style="margin:6px 0 10px;font-weight:700;color:var(--verde-escuro);font-size:14px">${itens[0].mercadoEmoji||"🏬"} ${esc(merc||"Loja")}</div><div class="grade" style="margin-bottom:18px">`;
+    for(const i of itens){
+      html+=`<div class="item-cart ${i.marcado?'marcado':''}">
+        <div class="check ${i.marcado?'on':''}" onclick="marcarItem(${i.idx})">${i.marcado?'✓':''}</div>
+        <div class="emoji">${i.emoji||"🛒"}</div>
+        <div class="corpo"><div class="ic-nome">${esc(i.nome)}</div><div class="ic-meta">${esc(i.categoria||"")} · ${reais(i.preco)} cada</div></div>
+        <div class="qtd"><button onclick="mudarQtd(${i.idx},-1)">−</button><span>${i.qtd}</span><button onclick="mudarQtd(${i.idx},1)">+</button></div>
+        <div class="preco-l">${reais(i.preco*i.qtd)}</div>
+        <button class="lixo" onclick="removerItem(${i.idx})">🗑</button>
+      </div>`;
+    }
+    html+=`</div>`;
+  }
+  html+=`<div class="resumo">
+      <div class="l"><span>Itens na lista</span><span>${nItens}</span></div>
+      <div class="l"><span>Já no carrinho (${marcados.length})</span><span>${reais(totalMarcado)}</span></div>
+      <div class="total"><span>Total estimado</span><span>${reais(total)}</span></div>
+      <div class="botoes">
+        <button class="btn fantasma" style="background:rgba(255,255,255,.12);color:#eaf3ec;box-shadow:none" onclick="baixarLista()">⬇️ Baixar lista</button>
+        <button class="btn oferta" onclick="finalizarCompra()">✓ Finalizar compra</button>
+      </div></div>`;
+  c.innerHTML=html;
+}
+function marcarItem(idx){ carrinho[idx].marcado=!carrinho[idx].marcado; renderLista(); }
+function mudarQtd(idx,d){ carrinho[idx].qtd+=d; if(carrinho[idx].qtd<=0) carrinho.splice(idx,1); telaCliente(); }
+function removerItem(idx){ carrinho.splice(idx,1); telaCliente(); }
+function limparLista(){ if(!carrinho.length)return; confirmar("Limpar lista","Remove todos os itens da lista atual.",async()=>{carrinho=[];telaCliente();},"Limpar"); }
+
+function baixarLista(){
+  if(!carrinho.length) return toast("Lista vazia.",true);
+  const data=new Date().toLocaleDateString("pt-BR");
+  let txt=`LISTA DE COMPRAS — Cesta\nCliente: ${sessao.nome}\nData: ${data}\n`+"=".repeat(40)+"\n\n";
+  const grupos={}; carrinho.forEach(i=>{(grupos[i.mercadoNome]??=[]).push(i);});
+  let total=0;
+  for(const [merc,itens] of Object.entries(grupos)){
+    txt+=`${merc||"Loja"}\n`;
+    for(const i of itens){ const sub=i.preco*i.qtd; total+=sub; txt+=`  [${i.marcado?"x":" "}] ${i.qtd}x ${i.nome}  —  ${reais(sub)}\n`; }
+    txt+="\n";
+  }
+  txt+="=".repeat(40)+`\nTOTAL ESTIMADO: ${reais(total)}\n`;
+  const blob=new Blob([txt],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob); const a=document.createElement("a");
+  a.href=url; a.download=`lista-compras-${data.replace(/\//g,"-")}.txt`; a.click(); URL.revokeObjectURL(url);
+  toast("Lista baixada.");
+}
+
+async function finalizarCompra(){
+  if(!carrinho.length) return toast("Lista vazia.",true);
+  const total=carrinho.reduce((s,i)=>s+i.preco*i.qtd,0);
+  try{
+    await fsAdd("historico",{clienteId:sessao.id,data:new Date().toISOString(),total,
+      itens:carrinho.map(i=>({nome:i.nome,emoji:i.emoji,qtd:i.qtd,preco:i.preco,mercadoNome:i.mercadoNome}))});
+    carrinho=[]; toast("Compra registrada no histórico!"); abaCliente="historico"; telaCliente();
+  }catch(e){ console.error(e); toast("Erro ao salvar histórico.",true); }
+}
+
+/* ====== ABA HISTÓRICO ====== */
+async function renderHistorico(){
+  const c=$("#cliente-corpo");
+  c.innerHTML=`<div class="vazio"><div class="spinner" style="margin:0 auto"></div></div>`;
+  let hist=[];
+  try{ hist=(await fsWhere("historico","clienteId",sessao.id)).sort((a,b)=>new Date(b.data)-new Date(a.data)); }
+  catch(e){ console.error(e); }
+  let html=`<div class="titulo-secao"><div><h2>Histórico de compras</h2><div class="sub">Suas listas finalizadas ficam salvas na nuvem</div></div></div>`;
+  if(!hist.length){ c.innerHTML=html+vazioHTML("🕘","Sem compras ainda","Finalize uma lista para vê-la aqui","irCliente('comprar')","🛍️ Começar a comprar"); return; }
+  html+=`<div class="grade">`;
+  hist.forEach((h,k)=>{
+    const d=new Date(h.data);
+    const dataFmt=d.toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"});
+    const hora=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    const nItens=h.itens.reduce((s,i)=>s+i.qtd,0);
+    html+=`<div class="hist-cartao">
+      <div class="hist-cabeca" onclick="toggleHist(${k})">
+        <div><div class="data">${dataFmt}</div><div class="resumo-h">${hora} · ${nItens} item(ns) · ${[...new Set(h.itens.map(i=>i.mercadoNome))].join(", ")}</div></div>
+        <div style="display:flex;align-items:center;gap:12px"><span class="vtotal">${reais(h.total)}</span><button class="btn fantasma peq" onclick="event.stopPropagation();repetirCompra(${k})">↻ Repetir</button></div>
+      </div>
+      <div class="hist-itens" id="hist-${k}">${h.itens.map(i=>`<div class="li"><span>${i.emoji||"🛒"} ${esc(i.nome)} ×${i.qtd}</span><span>${reais(i.preco*i.qtd)}</span></div>`).join("")}</div>
+    </div>`;
+  });
+  html+=`</div>`; c.innerHTML=html; window.__hist=hist;
+}
+function toggleHist(k){ $("#hist-"+k)?.classList.toggle("aberto"); }
+function repetirCompra(k){
+  const h=window.__hist?.[k]; if(!h) return;
+  h.itens.forEach(it=>{
+    const ex=carrinho.find(i=>i.nome===it.nome&&i.mercadoNome===it.mercadoNome);
+    if(ex) ex.qtd+=it.qtd;
+    else carrinho.push({produtoId:null,nome:it.nome,emoji:it.emoji,categoria:"",preco:it.preco,mercadoNome:it.mercadoNome,mercadoEmoji:"🏬",qtd:it.qtd,marcado:false});
+  });
+  toast("Itens adicionados à lista atual."); abaCliente="lista"; telaCliente();
+}
+
+/* ====== seed do cliente de teste (cria se não existir) ====== */
+async function semearCliente(){
+  try{
+    const existe=await fsWhere("clientes","email","cliente@email.com");
+    if(!existe.length) await fsAdd("clientes",{nome:"Visitante",email:"cliente@email.com",senha:"123",telefone:"(82) 90000-0000"});
+  }catch(e){ /* ignora se sem permissão */ }
+}
+
+/* ====== init ====== */
+Object.assign(window,{
+  trocarAba,fazerLogin,criarConta,sair,irCliente,setFiltroMerc,setFiltroCat,buscar,
+  addCarrinho,marcarItem,mudarQtd,removerItem,limparLista,baixarLista,finalizarCompra,
+  toggleHist,repetirCompra,fecharModal
+});
+
+(async function init(){
+  try{
+    await semearCliente();
+    const s=(()=>{try{return JSON.parse(localStorage.getItem("cesta_c_sessao"));}catch(e){return null;}})();
+    if(s){
+      const conta=await fsGet("clientes",s.id);
+      if(conta){ sessao={id:conta.id,nome:conta.nome}; entrarApp(); }
+      else $("#tela-portal").classList.remove("escondido");
+    }else $("#tela-portal").classList.remove("escondido");
+  }catch(e){
+    console.error(e);
+    document.getElementById("carregando").innerHTML=`<div style="text-align:center;padding:30px;max-width:420px">
+      <div style="font-size:40px">☁️⚠️</div>
+      <h2 style="color:var(--verde-escuro);margin:10px 0">Sem conexão com a nuvem</h2>
+      <p style="color:var(--cinza);font-size:14px">Verifique a internet e as <b>regras do Firestore</b>. Detalhe: ${esc(e.message||e)}</p></div>`;
+    return;
+  }
+  document.getElementById("carregando").style.display="none";
+})();
+
+/* o restante do app é injetado abaixo */
+</script>
+</body>
+</html>
