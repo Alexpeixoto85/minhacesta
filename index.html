@@ -420,6 +420,115 @@
   /* ── Tags/badges ────────────────────────────────────────────────── */
   .tag{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px}
   .tag.promo{background:var(--red-lt);color:var(--red)}
+  /* ── MELHORIAS DE RESPONSIVIDADE E INTUITIVIDADE ──────────────────── */
+  
+  /* Melhor suporte a diferentes tamanhos de tela */
+  @media(max-width:360px){
+    body{max-width:100%;padding:0}
+    .comprar-inner{padding:12px 10px 0}
+    .lista-inner{padding:12px 10px}
+    .historico-inner{padding:12px 10px}
+    .topo{padding:0 8px;gap:4px}
+    .marca{font-size:16px;gap:6px}
+    .topo .dir{gap:4px}
+    .loc-btn{padding:6px 8px;font-size:11px;max-width:35vw}
+    .barra-secoes button{font-size:10px;gap:2px}
+    .barra-secoes button .tab-ic{font-size:18px}
+    .grade.col3{grid-template-columns:1fr}
+    .prod{min-height:220px}
+    .prod .foto{height:100px;font-size:40px}
+    .prod .add{padding:9px 10px;font-size:12px}
+    .item-cart{padding:12px 10px;gap:10px}
+    .qtd button{width:28px;height:28px}
+    .check{width:24px;height:24px;font-size:12px}
+    .btn{padding:12px 16px;font-size:14px}
+    .campo input{padding:12px 14px;font-size:15px}
+    .vazio{padding:32px 12px}
+    .modal{max-height:85vh}
+    .portal-wrap{padding:12px 12px 16px;gap:12px}
+    .cartao-portal{padding:16px}
+    .resumo .botoes{grid-template-columns:1fr;gap:8px}
+  }
+  
+  @media(min-width:481px){
+    .grade.col3{grid-template-columns:1fr 1fr 1fr}
+  }
+  
+  /* Melhorias de tamanho mínimo para elementos interativos (acessibilidade) */
+  .btn, .campo input, .qtd button, .check, .loc-btn, .barra-secoes button {
+    min-height:44px;
+  }
+  
+  /* Melhor espaçamento e padding para melhor intuitividade */
+  .comprar-inner{padding:16px 12px 0}
+  .lista-inner{padding:16px 12px}
+  .historico-inner{padding:16px 12px}
+  
+  /* Melhor contraste e feedback visual */
+  .prod .add{
+    padding:10px 12px;min-height:40px;cursor:pointer;
+  }
+  
+  .item-cart{
+    padding:14px 14px;gap:12px;min-height:72px;
+  }
+  
+  .qtd button{
+    width:32px;height:32px;cursor:pointer;min-height:32px;
+  }
+  
+  .check{
+    width:28px;height:28px;font-size:14px;min-height:28px;
+  }
+  
+  .btn{
+    min-height:44px;cursor:pointer;
+  }
+  
+  .campo input{
+    padding:14px 16px;font-size:16px;min-height:44px;cursor:text;
+  }
+  
+  .loc-btn{
+    padding:8px 12px;border-radius:8px;font-size:12px;min-height:32px;
+    max-width:40vw;cursor:pointer;
+  }
+  
+  .barra-secoes button{
+    font-size:11px;gap:4px;min-height:56px;cursor:pointer;
+  }
+  
+  .barra-secoes button .tab-ic{font-size:22px}
+  
+  .prod .foto{
+    height:120px;font-size:48px;flex-shrink:0;
+  }
+  
+  .prod{min-height:240px}
+  
+  .marca{flex-shrink:0}
+  
+  .topo .dir{
+    margin-left:auto;flex-wrap:wrap;justify-content:flex-end;
+  }
+  
+  /* Melhor tipografia e legibilidade */
+  body{line-height:1.6;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  
+  /* Melhor modal responsivo */
+  .modal{
+    max-height:90vh;overflow-y:auto;
+  }
+  
+  /* Melhor portal responsivo */
+  .portal-wrap{
+    padding:16px 16px 20px;gap:14px;
+  }
+  
+  .cartao-portal{padding:20px}
+  
+  .resumo .botoes{gap:10px;margin-top:14px}
+
 </style>
 </head>
 <body>
