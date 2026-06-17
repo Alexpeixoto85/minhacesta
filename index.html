@@ -2364,7 +2364,42 @@ function baixarLista(){
   toast("Lista baixada.");
 }
 
-async function finalizarCompra(){
+function finalizarCompra(){
+  if(!carrinho.length) return toast("Lista vazia.",true);
+  const recos=calcularRecomendacao();
+  const nItens=carrinho.length;
+  let corpo;
+  if(recos.length){
+    const best=recos[0];
+    const completos=recos.filter(r=>r.cobertura===nItens);
+    const base=completos.length?completos:recos;
+    const economia=Math.max(...base.map(r=>r.total))-best.total;
+    const totalCarrinho=carrinho.reduce((s,i)=>s+i.preco*i.qtd,0);
+    const completo=best.cobertura===nItens;
+    corpo=`
+      <div class="reco" style="margin:0 0 4px">
+        <div class="et">🏆 Melhor lugar para comprar tudo num só lugar</div>
+        <h3>${best.loja.emoji||"🏬"} ${esc(best.loja.nome)}</h3>
+        <div class="cob">${best.cobertura} de ${nItens} ${nItens===1?"item disponível":"itens disponíveis"} aqui${best.faltando.length?` · falta: ${best.faltando.map(f=>esc(f.nome)).join(", ")}`:""}</div>
+        <div class="linhas">
+          <div class="bloco"><div class="n">${reais(best.total)}</div><div class="r">${completo?"total comprando tudo aqui":"total dos itens disponíveis"}</div></div>
+          <div class="bloco"><div class="n">${distLabel(best.dist)}</div><div class="r">${localCliente?"distância":"defina seu local"}</div></div>
+        </div>
+        ${economia>0.01?`<div class="eco">💰 Comprando tudo aqui você economiza até <b>${reais(economia)}</b> frente ao mercado mais caro.</div>`:`<div class="eco">Este é o melhor preço encontrado para sua lista.</div>`}
+        ${best.loja.lat!=null?`<a class="btn btn-mapa" href="https://www.google.com/maps/dir/?api=1&destination=${best.loja.lat},${best.loja.lng}" target="_blank">🗺️ Como chegar</a>`:`<button class="btn btn-mapa" onclick="abrirLocal()">📍 Definir minha localização</button>`}
+      </div>
+      ${recos.length>1?`<div style="font-size:12.5px;color:var(--muted);margin-top:10px">Comparação completa entre mercados está na sua lista, na seção de recomendação.</div>`:""}
+      <p style="font-size:12.5px;color:var(--muted);margin-top:10px">Ao enviar, sua lista vai para o(s) supermercado(s) escolhido(s) e você acompanha o status no Histórico.</p>`;
+  }else{
+    corpo=`<p style="color:var(--muted);font-size:14px">Não consegui calcular a melhor loja agora (defina sua localização e verifique se os produtos têm preço). Você ainda pode enviar o pedido normalmente.</p>`;
+  }
+  abrirModal("Finalizar pedido",corpo,
+    `<button class="btn fantasma" onclick="fecharModal()">Voltar</button>
+     <button class="btn" style="background:var(--amber);color:#3a1800" id="btn-enviar-ped">✓ Enviar pedido</button>`);
+  const b=$("#btn-enviar-ped"); if(b) b.onclick=()=>{ b.disabled=true; enviarPedido(); };
+}
+
+async function enviarPedido(){
   if(!carrinho.length) return toast("Lista vazia.",true);
   const total=carrinho.reduce((s,i)=>s+i.preco*i.qtd,0);
   const agora=Date.now();
@@ -2654,7 +2689,7 @@ async function semearCliente(){
 /* ====== init ====== */
 Object.assign(window,{
   trocarAba,fazerLogin,criarConta,sair,irCliente,setFiltroMerc,setFiltroCat,buscar,
-  addCarrinho,marcarItem,mudarQtd,removerItem,limparLista,baixarLista,finalizarCompra,
+  addCarrinho,marcarItem,mudarQtd,removerItem,limparLista,baixarLista,finalizarCompra,enviarPedido,
   toggleHist,repetirCompra,fecharModal,carMover,abrirLocal
 });
 
