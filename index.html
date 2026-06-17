@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -2370,42 +2368,58 @@ async function finalizarCompra(){
   const agora=Date.now();
   const grupos={};
   carrinho.forEach(i=>{ const k=i.supermercadoId||"_sem"; (grupos[k]??=[]).push(i); });
+
+  // 1) histórico (lista completa, como antes) — melhor esforço
   try{
-    // 1) histórico (lista completa, como antes)
     await fsAdd("historico",{clienteId:sessao.id,data:new Date().toISOString(),total,
       itens:carrinho.map(i=>({nome:i.nome,emoji:i.emoji,qtd:i.qtd,preco:i.preco,mercadoNome:i.mercadoNome,supermercadoId:i.supermercadoId||null}))});
+  }catch(e){ console.error("Falha ao salvar histórico:",e); }
 
-    // 2) um pedido por supermercado (nova coleção "pedidos")
-    const enviosZap=[];
-    for(const [sid,itens] of Object.entries(grupos)){
-      const m = sid!=="_sem" ? cacheMercados[sid] : null;
-      const totalGrupo=itens.reduce((s,i)=>s+i.preco*i.qtd,0);
-      if(sid!=="_sem"){
-        await fsAdd("pedidos",{
-          clienteId:sessao.id, clienteNome:sessao.nome, clienteEmail:sessao.email||"", clienteTelefone:sessao.telefone||"",
-          supermercadoId:sid,
-          itens:itens.map(i=>({produtoId:i.produtoId||null,nome:i.nome,qtd:i.qtd,preco:i.preco,emoji:i.emoji||"🛒"})),
-          total:totalGrupo, status:"aguardando", data:new Date().toISOString(), criadoEm:agora, atualizadoEm:agora
-        });
-      }
-      if(m && m.whatsapp){
-        const linhas=itens.map(i=>`• ${i.qtd}x ${i.nome} — ${reais(i.preco*i.qtd)}`).join("\n");
-        const texto=`🧺 *Novo pedido — Cesta*\n*Cliente:* ${sessao.nome}\n${sessao.telefone?`*Tel:* ${sessao.telefone}\n`:""}\n*${m.nome}*\n${linhas}\n\n*Total:* ${reais(totalGrupo)}`;
-        const link=zapLink(m.whatsapp,texto);
-        if(link) enviosZap.push({nome:m.nome,emoji:m.emoji||"🏬",link});
-      }
+  // 2) um pedido por supermercado (nova coleção "pedidos")
+  const enviosZap=[];
+  let pedidosCriados=0, semMercado=0;
+  const erros=[];
+  for(const [sid,itens] of Object.entries(grupos)){
+    const totalGrupo=itens.reduce((s,i)=>s+i.preco*i.qtd,0);
+    if(sid==="_sem"){ semMercado+=itens.length; continue; } // itens sem supermercadoId (ex.: repetidos)
+    const m = cacheMercados[sid] || null;
+    try{
+      const pid=await fsAdd("pedidos",{
+        clienteId:sessao.id, clienteNome:sessao.nome, clienteEmail:sessao.email||"", clienteTelefone:sessao.telefone||"",
+        supermercadoId:sid,
+        itens:itens.map(i=>({produtoId:i.produtoId||null,nome:i.nome,qtd:i.qtd,preco:i.preco,emoji:i.emoji||"🛒"})),
+        total:totalGrupo, status:"aguardando", data:new Date().toISOString(), criadoEm:agora, atualizadoEm:agora
+      });
+      console.log("Pedido criado",pid,"→ supermercadoId:",sid,"loja:",m?m.nome:"(desconhecida)");
+      pedidosCriados++;
+    }catch(e){ console.error("Falha ao criar pedido para",sid,e); erros.push(e.code||e.message||String(e)); }
+
+    if(m && m.whatsapp){
+      const linhas=itens.map(i=>`• ${i.qtd}x ${i.nome} — ${reais(i.preco*i.qtd)}`).join("\n");
+      const texto=`🧺 *Novo pedido — Cesta*\n*Cliente:* ${sessao.nome}\n${sessao.telefone?`*Tel:* ${sessao.telefone}\n`:""}\n*${m.nome}*\n${linhas}\n\n*Total:* ${reais(totalGrupo)}`;
+      const link=zapLink(m.whatsapp,texto);
+      if(link) enviosZap.push({nome:m.nome,emoji:m.emoji||"🏬",link});
     }
+  }
 
-    carrinho=[];
-    const corpoZap = enviosZap.length
-      ? `<p style="color:var(--muted);font-size:14px;margin-bottom:12px">Envie a lista direto pelo WhatsApp da loja para agilizar o atendimento:</p>`
-        + enviosZap.map(e=>`<a class="btn full" style="background:#25D366;margin-bottom:8px;display:block;text-align:center" href="${e.link}" target="_blank" rel="noopener">📲 Enviar para ${esc(e.emoji+" "+e.nome)}</a>`).join("")
-      : `<p style="color:var(--muted);font-size:14px">As lojas escolhidas ainda não têm WhatsApp cadastrado, mas o pedido foi registrado e elas o verão no painel.</p>`;
-    abrirModal("✅ Pedido enviado!",
-      `<p style="color:var(--g1);font-size:14.5px;margin-bottom:14px">Sua lista foi enviada ao(s) supermercado(s). Você receberá a confirmação aqui no app e pode acompanhar o status na aba <b>Histórico</b>.</p>${corpoZap}`,
-      `<button class="btn" onclick="fecharModal()">Concluir</button>`);
-    abaCliente="historico"; telaCliente();
-  }catch(e){ console.error(e); toast("Erro ao enviar o pedido.",true); }
+  // se nada foi enviado e houve erro, avisa com a causa
+  if(pedidosCriados===0 && erros.length){
+    const permissao=erros.some(x=>/permission|insufficient/i.test(x));
+    return toast(permissao
+      ? "Pedido não enviado: o Firestore bloqueou a coleção 'pedidos'. Publique as regras."
+      : "Pedido não enviado: "+erros[0], true);
+  }
+
+  carrinho=[];
+  const avisoSem = semMercado ? `<p style="color:var(--muted);font-size:12.5px;margin-bottom:10px">⚠️ ${semMercado} item(ns) sem loja vinculada (adicionados por "Repetir") não geraram pedido. Re-adicione pela aba Comprar para enviá-los.</p>` : "";
+  const corpoZap = enviosZap.length
+    ? `<p style="color:var(--muted);font-size:14px;margin-bottom:12px">Envie a lista direto pelo WhatsApp da loja para agilizar o atendimento:</p>`
+      + enviosZap.map(e=>`<a class="btn full" style="background:#25D366;margin-bottom:8px;display:block;text-align:center" href="${e.link}" target="_blank" rel="noopener">📲 Enviar para ${esc(e.emoji+" "+e.nome)}</a>`).join("")
+    : `<p style="color:var(--muted);font-size:14px">As lojas escolhidas ainda não têm WhatsApp cadastrado, mas o pedido foi registrado e elas o verão no painel.</p>`;
+  abrirModal("✅ Pedido enviado!",
+    `<p style="color:var(--g1);font-size:14.5px;margin-bottom:14px">Sua lista foi enviada ao(s) supermercado(s). Você receberá a confirmação aqui no app e pode acompanhar o status na aba <b>Histórico</b>.</p>${avisoSem}${corpoZap}`,
+    `<button class="btn" onclick="fecharModal()">Concluir</button>`);
+  abaCliente="historico"; telaCliente();
 }
 
 /* ====== ABA HISTÓRICO ====== */
@@ -2461,7 +2475,14 @@ function repetirCompra(k){
   h.itens.forEach(it=>{
     const ex=carrinho.find(i=>i.nome===it.nome&&i.mercadoNome===it.mercadoNome);
     if(ex) ex.qtd+=it.qtd;
-    else carrinho.push({produtoId:null,nome:it.nome,emoji:it.emoji,categoria:"",preco:it.preco,mercadoNome:it.mercadoNome,mercadoEmoji:"🏬",qtd:it.qtd,marcado:false});
+    else{
+      // tenta recuperar o supermercadoId: do próprio histórico ou pelo nome da loja
+      let sid=it.supermercadoId||null;
+      if(!sid && it.mercadoNome){ const m=Object.values(cacheMercados).find(x=>x.nome===it.mercadoNome); if(m) sid=m.id; }
+      const mm=sid?cacheMercados[sid]:null;
+      carrinho.push({produtoId:it.produtoId||null,nome:it.nome,emoji:it.emoji,categoria:"",preco:it.preco,
+        supermercadoId:sid,mercadoNome:it.mercadoNome||(mm?mm.nome:""),mercadoEmoji:mm?mm.emoji:"🏬",qtd:it.qtd,marcado:false});
+    }
   });
   toast("Itens adicionados à lista atual."); abaCliente="lista"; telaCliente();
 }
