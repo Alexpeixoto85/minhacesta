@@ -2069,12 +2069,12 @@ function toast(msg,erro=false){
 function abrirModal(t,c,r=""){ $("#modal-titulo").textContent=t; $("#modal-corpo").innerHTML=c; $("#modal-pe").innerHTML=r; $("#modal-fundo").classList.add("on"); }
 function fecharModal(){ $("#modal-fundo").classList.remove("on"); }
 function confirmar(t,txt,fn,rotulo="Confirmar"){
-  abrirModal(t,`<p style="color:var(--cinza);font-size:14.5px">${esc(txt)}</p>`,
-    `<button class="btn fantasma" onclick="fecharModal()">Cancelar</button><button class="btn" style="background:var(--preco-promo)" id="btn-conf">${esc(rotulo)}</button>`);
+  abrirModal(t,`<p style="color:var(--muted);font-size:14.5px">${esc(txt)}</p>`,
+    `<button class="btn fantasma" onclick="fecharModal()">Cancelar</button><button class="btn" style="background:var(--g3)" id="btn-conf">${esc(rotulo)}</button>`);
   $("#btn-conf").onclick=async()=>{ await fn(); fecharModal(); };
 }
 function vazioHTML(ic,t,p,onclick="",botao=""){
-  return `<div class="vazio"><div class="ic">${ic}</div><b style="color:var(--verde-escuro);font-size:16px">${esc(t)}</b><p>${esc(p)}</p>${botao?`<button class="btn" onclick="${onclick}">${esc(botao)}</button>`:""}</div>`;
+  return `<div class="vazio"><div class="ic">${ic}</div><b style="color:var(--g1);font-size:16px">${esc(t)}</b><p>${esc(p)}</p>${botao?`<button class="btn" onclick="${onclick}">${esc(botao)}</button>`:""}</div>`;
 }
 window.fecharModal=fecharModal;
 
@@ -2656,14 +2656,14 @@ function montarRodapePatro(){
 function atualizarLocLabel(){ const l=$("#loc-label"); if(l) l.textContent=localCliente?localCliente.label:"definir local"; }
 function abrirLocal(){
   abrirModal("Sua localização",`
-    <p style="color:var(--cinza);font-size:14px;margin-bottom:14px">Usamos sua localização só para mostrar os mercados mais próximos e calcular distâncias na recomendação.</p>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:14px">Usamos sua localização só para mostrar os mercados mais próximos e calcular distâncias na recomendação.</p>
     <div class="loc-opt">
       <button class="btn full" id="loc-gps">📍 Usar minha localização atual</button>
       <div class="ou">— ou informe seu CEP —</div>
       <div class="campo"><input id="loc-cep" placeholder="00000-000" inputmode="numeric" maxlength="9" value="${localCliente&&localCliente.cep?esc(localCliente.cep):""}"></div>
       <button class="btn fantasma full" id="loc-cep-btn">Buscar pelo CEP</button>
     </div>
-    <div id="loc-status" style="font-size:13px;margin-top:14px;text-align:center;color:var(--cinza)"></div>
+    <div id="loc-status" style="font-size:13px;margin-top:14px;text-align:center;color:var(--muted)"></div>
   `);
   const st=$("#loc-status");
   $("#loc-gps").onclick=()=>{
@@ -2716,7 +2716,7 @@ function calcularRecomendacao(){
 function recomendacaoHTML(){
   const recos=calcularRecomendacao();
   const nItensDistintos=carrinho.length;
-  if(!recos.length) return `<div class="cartao" style="text-align:center;color:var(--cinza);margin-bottom:16px">Adicione produtos para ver o melhor lugar para comprar.</div>`;
+  if(!recos.length) return `<div class="cartao" style="text-align:center;color:var(--muted);margin-bottom:16px">Adicione produtos para ver o melhor lugar para comprar.</div>`;
   const best=recos[0];
   const completos=recos.filter(r=>r.cobertura===nItensDistintos);
   const base=completos.length?completos:recos;
@@ -2786,8 +2786,8 @@ Object.assign(window,{
     console.error(e);
     document.getElementById("carregando").innerHTML=`<div style="text-align:center;padding:30px;max-width:420px">
       <div style="font-size:40px">☁️⚠️</div>
-      <h2 style="color:var(--verde-escuro);margin:10px 0">Sem conexão com a nuvem</h2>
-      <p style="color:var(--cinza);font-size:14px">Verifique a internet e as <b>regras do Firestore</b>. Detalhe: ${esc(e.message||e)}</p></div>`;
+      <h2 style="color:var(--g1);margin:10px 0">Sem conexão com a nuvem</h2>
+      <p style="color:var(--muted);font-size:14px">Verifique a internet e as <b>regras do Firestore</b>. Detalhe: ${esc(e.message||e)}</p></div>`;
     return;
   }
   document.getElementById("carregando").style.display="none";
