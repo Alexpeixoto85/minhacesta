@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -222,6 +223,8 @@
   }
   .busca-cx input:focus{outline:none;border-color:var(--g4);box-shadow:0 0 0 3px rgba(47,129,82,.12)}
   .busca-cx .lupa{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--muted);pointer-events:none}
+  .yt-player{margin-top:10px}
+  .yt-player iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:12px;display:block}
   .filtros{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;margin-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .filtros::-webkit-scrollbar{display:none}
   .chip{
@@ -2027,6 +2030,12 @@ async function fsWhere(col,campo,val){ const s=await getDocs(query(collection(db
 const $ = s=>document.querySelector(s);
 const reais = v=>"R$ "+(Number(v)||0).toFixed(2).replace(".",",");
 function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+/* ====== WhatsApp / YouTube ====== */
+function soDigitos(s){return String(s||"").replace(/\D/g,"");}
+function zapNumero(tel){ let d=soDigitos(tel); if(!d) return null; if(d.startsWith("0")) d=d.replace(/^0+/,""); if(d.length<=11 && !d.startsWith("55")) d="55"+d; return d; }
+function zapLink(tel,texto){ const d=zapNumero(tel); if(!d) return null; return `https://wa.me/${d}?text=${encodeURIComponent(texto||"")}`; }
+function ytId(url){ const m=String(url||"").match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/); return m?m[1]:null; }
+function ytEmbed(url){ const id=ytId(url); return id?`<div class="yt-player"><iframe src="https://www.youtube.com/embed/${id}?rel=0" frameborder="0" allowfullscreen loading="lazy"></iframe></div>`:""; }
 function toast(msg,erro=false){
   const t=document.createElement("div"); t.className="toast"+(erro?" erro":"");
   t.innerHTML=(erro?"⚠️ ":"✓ ")+esc(msg); $("#toast-area").appendChild(t);
@@ -2047,9 +2056,10 @@ window.fecharModal=fecharModal;
 /* ====== sessão (somente cliente) ====== */
 let sessao=null;
 let carrinho=[];
-let cacheProdutos=[], cacheOfertas=[], cacheMercados={}, cachePatrocinados=[];
+let cacheProdutos=[], cacheOfertas=[], cacheMercados={}, cachePatrocinados=[], cachePedidos=[];
+const _pedStatus={};
 let abaCliente="comprar", filtroMerc="todos", filtroCat="todas", termoBusca="";
-let unsubProdutos=null, unsubOfertas=null, unsubMercados=null, unsubPatro=null;
+let unsubProdutos=null, unsubOfertas=null, unsubMercados=null, unsubPatro=null, unsubPedidos=null;
 let localCliente=null;   // {lat,lng,label,cep}
 
 /* ====== utilidades de comparação/distância ====== */
@@ -2089,7 +2099,7 @@ async function fazerLogin(){
     const achados=await fsWhere("clientes","email",email);
     const conta=achados[0];
     if(!conta||conta.senha!==senha) return toast("E-mail ou senha incorretos.",true);
-    sessao={id:conta.id,nome:conta.nome};
+    sessao={id:conta.id,nome:conta.nome,email:conta.email||email,telefone:conta.telefone||""};
     entrarApp();
   }catch(e){ console.error(e); toast("Erro ao conectar à nuvem.",true); }
 }
@@ -2102,7 +2112,7 @@ async function criarConta(){
     const existe=await fsWhere("clientes","email",email);
     if(existe.length) return toast("Esse e-mail já tem cadastro.",true);
     const id=await fsAdd("clientes",{nome,email,senha,telefone:tel});
-    sessao={id,nome};
+    sessao={id,nome,email,telefone:tel};
     toast("Conta criada! Bem-vindo(a).");
     entrarApp();
   }catch(e){ console.error(e); toast("Erro ao criar conta.",true); }
@@ -2110,8 +2120,8 @@ async function criarConta(){
 
 function sair(){
   sessao=null; carrinho=[];
-  if(unsubProdutos)unsubProdutos(); if(unsubOfertas)unsubOfertas(); if(unsubMercados)unsubMercados(); if(unsubPatro)unsubPatro();
-  unsubProdutos=unsubOfertas=unsubMercados=unsubPatro=null;
+  if(unsubProdutos)unsubProdutos(); if(unsubOfertas)unsubOfertas(); if(unsubMercados)unsubMercados(); if(unsubPatro)unsubPatro(); if(unsubPedidos)unsubPedidos();
+  unsubProdutos=unsubOfertas=unsubMercados=unsubPatro=unsubPedidos=null;
   try{ localStorage.removeItem("cesta_c_sessao"); }catch(e){}
   $("#topo").classList.add("escondido"); $("#conteudo").classList.add("escondido");
   $("#tela-portal").classList.remove("escondido");
@@ -2151,6 +2161,20 @@ function ligarSincronismo(){
     cachePatrocinados=snap.docs.map(d=>({id:d.id,...d.data()}));
     if(sessao) montarRodapePatro();
   },err=>{ /* coleção pode não ter permissão ainda */ });
+  unsubPedidos=onSnapshot(query(collection(db,"pedidos"),where("clienteId","==",sessao.id)),snap=>{
+    const novos=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
+    novos.forEach(p=>{
+      const ant=_pedStatus[p.id];
+      if(ant && ant!==p.status){
+        const nomeLoja=cacheMercados[p.supermercadoId]?.nome||"a loja";
+        if(p.status==="confirmado") toast(`✅ Pedido confirmado por ${nomeLoja}!`);
+        else if(p.status==="recusado") toast(`❌ Pedido recusado por ${nomeLoja}.`,true);
+      }
+      _pedStatus[p.id]=p.status;
+    });
+    cachePedidos=novos;
+    if(sessao && abaCliente==="historico") renderHistorico();
+  },err=>{ /* permissão pode faltar */ });
 }
 
 /* ====== navegação ====== */
@@ -2191,7 +2215,7 @@ function renderComprar(){
   c.innerHTML=`
     <div class="comprar-inner">
     <div id="area-banners"></div>
-    <div class="busca-cx"><span class="lupa">🔍</span><input id="busca" placeholder="Buscar produto..." value="${esc(termoBusca)}" oninput="buscar(this.value)"></div>
+    <div class="busca-cx"><span class="lupa">🔍</span><input id="busca" placeholder="Buscar por nome, marca ou preço..." value="${esc(termoBusca)}" oninput="buscar(this.value)"></div>
     <div class="filtros-label">Supermercado</div>
     <div class="filtros">${chipsMerc}</div>
     <div class="filtros-label">Categoria</div>
@@ -2215,6 +2239,7 @@ function renderBanners(){
       <div class="et">Oferta especial</div><h3>${esc(o.titulo)}</h3><p>${esc(o.descricao||"")}</p>
       <div class="merc">${m?(m.emoji||"🏬")+" "+esc(m.nome):""}</div>
       ${o.validade?`<span class="val">${esc(o.validade)}</span>`:""}
+      ${ytEmbed(o.youtube)}
     </div>`;
   }).join("")+`</div>`;
 }
@@ -2224,7 +2249,17 @@ function renderGradeProdutos(){
   let lista=cacheProdutos.slice();
   if(filtroMerc!=="todos") lista=lista.filter(p=>p.supermercadoId===filtroMerc);
   if(filtroCat!=="todas") lista=lista.filter(p=>p.categoria===filtroCat);
-  if(termoBusca.trim()){ const t=termoBusca.toLowerCase(); lista=lista.filter(p=>p.nome.toLowerCase().includes(t)||(p.categoria||"").toLowerCase().includes(t)); }
+  if(termoBusca.trim()){
+    const t=termoBusca.toLowerCase();
+    lista=lista.filter(p=>{
+      const precoStr=String(p.preco??"")+" "+String(p.precoPromocional??"");
+      return p.nome.toLowerCase().includes(t)
+        || (p.categoria||"").toLowerCase().includes(t)
+        || (p.marca||"").toLowerCase().includes(t)
+        || precoStr.replace(".",",").includes(t)
+        || precoStr.includes(t);
+    });
+  }
   lista.sort((a,b)=>(b.emPromocao?1:0)-(a.emPromocao?1:0));
 
   if(!lista.length){ g.style.display="block"; g.innerHTML=vazioHTML("🔍","Nada encontrado","Tente outro termo, categoria ou supermercado"); return; }
@@ -2233,10 +2268,14 @@ function renderGradeProdutos(){
     const promo=p.emPromocao&&p.precoPromocional;
     const m=cacheMercados[p.supermercadoId];
     const noCarrinho=carrinho.find(i=>i.produtoId===p.id);
+    const fotoHtml=p.foto
+      ? `<img src="${p.foto}" alt="${esc(p.nome)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">`
+      : `${p.emoji||"🛒"}`;
     return `<div class="prod">
-      <div class="foto">${promo?`<span class="selo">${Math.round((1-p.precoPromocional/p.preco)*100)}% OFF</span>`:""}${p.emoji||"🛒"}</div>
+      <div class="foto">${promo?`<span class="selo">${Math.round((1-p.precoPromocional/p.preco)*100)}% OFF</span>`:""}${fotoHtml}</div>
       <div class="conteudo">
         <div class="pnome">${esc(p.nome)}</div>
+        ${p.marca?`<div class="pmarca" style="font-size:11px;color:var(--muted);font-weight:600">${esc(p.marca)}</div>`:""}
         <div class="pcat">${m?esc(m.nome):""} · ${esc(p.categoria||"")}</div>
         <div class="precos">${promo?`<span class="pde">${reais(p.preco)}</span><span class="ppor promo">${reais(p.precoPromocional)}</span>`:`<span class="ppor">${reais(p.preco)}</span>`}</div>
       </div>
@@ -2252,7 +2291,7 @@ function addCarrinho(produtoId){
   const ex=carrinho.find(i=>i.produtoId===produtoId);
   if(ex) ex.qtd++;
   else carrinho.push({produtoId,nome:p.nome,emoji:p.emoji,categoria:p.categoria,preco,
-    mercadoNome:m?m.nome:"",mercadoEmoji:m?m.emoji:"🏬",qtd:1,marcado:false});
+    supermercadoId:p.supermercadoId,mercadoNome:m?m.nome:"",mercadoEmoji:m?m.emoji:"🏬",qtd:1,marcado:false});
   toast(`${p.nome} na lista`);
   renderGradeProdutos();
   const btn=document.querySelectorAll(".barra-secoes button")[1];
@@ -2328,21 +2367,77 @@ function baixarLista(){
 async function finalizarCompra(){
   if(!carrinho.length) return toast("Lista vazia.",true);
   const total=carrinho.reduce((s,i)=>s+i.preco*i.qtd,0);
+  const agora=Date.now();
+  const grupos={};
+  carrinho.forEach(i=>{ const k=i.supermercadoId||"_sem"; (grupos[k]??=[]).push(i); });
   try{
+    // 1) histórico (lista completa, como antes)
     await fsAdd("historico",{clienteId:sessao.id,data:new Date().toISOString(),total,
-      itens:carrinho.map(i=>({nome:i.nome,emoji:i.emoji,qtd:i.qtd,preco:i.preco,mercadoNome:i.mercadoNome}))});
-    carrinho=[]; toast("Compra registrada no histórico!"); abaCliente="historico"; telaCliente();
-  }catch(e){ console.error(e); toast("Erro ao salvar histórico.",true); }
+      itens:carrinho.map(i=>({nome:i.nome,emoji:i.emoji,qtd:i.qtd,preco:i.preco,mercadoNome:i.mercadoNome,supermercadoId:i.supermercadoId||null}))});
+
+    // 2) um pedido por supermercado (nova coleção "pedidos")
+    const enviosZap=[];
+    for(const [sid,itens] of Object.entries(grupos)){
+      const m = sid!=="_sem" ? cacheMercados[sid] : null;
+      const totalGrupo=itens.reduce((s,i)=>s+i.preco*i.qtd,0);
+      if(sid!=="_sem"){
+        await fsAdd("pedidos",{
+          clienteId:sessao.id, clienteNome:sessao.nome, clienteEmail:sessao.email||"", clienteTelefone:sessao.telefone||"",
+          supermercadoId:sid,
+          itens:itens.map(i=>({produtoId:i.produtoId||null,nome:i.nome,qtd:i.qtd,preco:i.preco,emoji:i.emoji||"🛒"})),
+          total:totalGrupo, status:"aguardando", data:new Date().toISOString(), criadoEm:agora, atualizadoEm:agora
+        });
+      }
+      if(m && m.whatsapp){
+        const linhas=itens.map(i=>`• ${i.qtd}x ${i.nome} — ${reais(i.preco*i.qtd)}`).join("\n");
+        const texto=`🧺 *Novo pedido — Cesta*\n*Cliente:* ${sessao.nome}\n${sessao.telefone?`*Tel:* ${sessao.telefone}\n`:""}\n*${m.nome}*\n${linhas}\n\n*Total:* ${reais(totalGrupo)}`;
+        const link=zapLink(m.whatsapp,texto);
+        if(link) enviosZap.push({nome:m.nome,emoji:m.emoji||"🏬",link});
+      }
+    }
+
+    carrinho=[];
+    const corpoZap = enviosZap.length
+      ? `<p style="color:var(--muted);font-size:14px;margin-bottom:12px">Envie a lista direto pelo WhatsApp da loja para agilizar o atendimento:</p>`
+        + enviosZap.map(e=>`<a class="btn full" style="background:#25D366;margin-bottom:8px;display:block;text-align:center" href="${e.link}" target="_blank" rel="noopener">📲 Enviar para ${esc(e.emoji+" "+e.nome)}</a>`).join("")
+      : `<p style="color:var(--muted);font-size:14px">As lojas escolhidas ainda não têm WhatsApp cadastrado, mas o pedido foi registrado e elas o verão no painel.</p>`;
+    abrirModal("✅ Pedido enviado!",
+      `<p style="color:var(--g1);font-size:14.5px;margin-bottom:14px">Sua lista foi enviada ao(s) supermercado(s). Você receberá a confirmação aqui no app e pode acompanhar o status na aba <b>Histórico</b>.</p>${corpoZap}`,
+      `<button class="btn" onclick="fecharModal()">Concluir</button>`);
+    abaCliente="historico"; telaCliente();
+  }catch(e){ console.error(e); toast("Erro ao enviar o pedido.",true); }
 }
 
 /* ====== ABA HISTÓRICO ====== */
+function pedidosStatusHTML(){
+  if(!cachePedidos.length) return "";
+  const badge=st=>{
+    const map={aguardando:["⏳ Aguardando confirmação","#b8761c"],confirmado:["✅ Confirmado","#2f8152"],recusado:["❌ Recusado","var(--red)"]};
+    const [txt,cor]=map[st]||map.aguardando;
+    return `<span style="display:inline-block;font-size:11px;font-weight:700;color:${cor};border:1.5px solid ${cor};border-radius:20px;padding:2px 9px;white-space:nowrap">${txt}</span>`;
+  };
+  let h=`<div style="margin-bottom:18px"><div style="font-weight:700;color:var(--g1);margin-bottom:8px">📬 Pedidos enviados</div><div class="grade">`;
+  cachePedidos.forEach(p=>{
+    const m=cacheMercados[p.supermercadoId];
+    const data=p.criadoEm?new Date(p.criadoEm).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
+    const nItens=(p.itens||[]).reduce((s,i)=>s+(i.qtd||0),0);
+    h+=`<div class="hist-cartao"><div class="hist-cabeca" style="cursor:default">
+      <div><div class="data">${m?(m.emoji||"🏬")+" "+esc(m.nome):"Loja"}</div><div class="resumo-h">${data} · ${nItens} item(ns)</div></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end"><span class="vtotal">${reais(p.total)}</span>${badge(p.status||"aguardando")}</div>
+    </div></div>`;
+  });
+  h+=`</div></div>`;
+  return h;
+}
+
 async function renderHistorico(){
   const c=$("#cliente-corpo");
   c.innerHTML=`<div class="vazio"><div class="spinner" style="margin:0 auto"></div></div>`;
   let hist=[];
   try{ hist=(await fsWhere("historico","clienteId",sessao.id)).sort((a,b)=>new Date(b.data)-new Date(a.data)); }
   catch(e){ console.error(e); }
-  let html=`<div class="historico-inner"><div class="titulo-secao"><div><h2>Histórico</h2><div class="sub">Suas listas finalizadas na nuvem</div></div></div>`;
+  let html=`<div class="historico-inner"><div class="titulo-secao"><div><h2>Histórico</h2><div class="sub">Seus pedidos e listas finalizadas</div></div></div>`;
+  html+=pedidosStatusHTML();
   if(!hist.length){ c.innerHTML=html+vazioHTML("🕘","Sem compras ainda","Finalize uma lista para vê-la aqui","irCliente('comprar')","🛍️ Começar a comprar")+"</div>"; return; }
   html+=`<div class="grade">`;
   hist.forEach((h,k)=>{
@@ -2373,13 +2468,13 @@ function repetirCompra(k){
 
 /* ====== CARROSSEL / OFERTAS DO PORTAL / RODAPÉ PATROCINADO ====== */
 const CAR={};
-function ofertaParaCard(o){const m=cacheMercados[o.supermercadoId];return {tipo:"oferta",titulo:o.titulo,descricao:o.descricao,validade:o.validade,foto:o.foto,merc:m?m.nome:""};}
-function patroParaCard(p){return {tipo:"patro",titulo:p.titulo,descricao:p.descricao,validade:p.validade,foto:p.foto,link:p.link};}
+function ofertaParaCard(o){const m=cacheMercados[o.supermercadoId];return {tipo:"oferta",titulo:o.titulo,descricao:o.descricao,validade:o.validade,foto:o.foto,youtube:o.youtube,merc:m?m.nome:""};}
+function patroParaCard(p){return {tipo:"patro",titulo:p.titulo,descricao:p.descricao,validade:p.validade,foto:p.foto,youtube:p.youtube,link:p.link};}
 function cardCarrosselHTML(c){
   const foto=c.foto?`<div class="bg" style="background-image:url('${c.foto}')"></div>`:"";
   const tag=c.tipo==="patro"?`<span class="tagp pa">Patrocinado</span>`:`<span class="tagp of">Oferta</span>`;
-  return `<div class="car-card ${c.tipo==="patro"?"patro":""} ${c.foto?"tem-foto":""}" ${c.link?`onclick="window.open('${esc(c.link)}','_blank')" style="cursor:pointer"`:""}>
-    ${foto}${tag}<h4>${esc(c.titulo)}</h4><p>${esc(c.descricao||"")}</p>${c.validade?`<div class="v">${esc(c.validade)}</div>`:(c.merc?`<div class="v">${esc(c.merc)}</div>`:"")}
+  return `<div class="car-card ${c.tipo==="patro"?"patro":""} ${c.foto?"tem-foto":""}" ${c.link&&!c.youtube?`onclick="window.open('${esc(c.link)}','_blank')" style="cursor:pointer"`:""}>
+    ${foto}${tag}<h4>${esc(c.titulo)}</h4><p>${esc(c.descricao||"")}</p>${c.validade?`<div class="v">${esc(c.validade)}</div>`:(c.merc?`<div class="v">${esc(c.merc)}</div>`:"")}${ytEmbed(c.youtube)}
   </div>`;
 }
 function montarCarrossel(nome,cards){
@@ -2553,7 +2648,7 @@ Object.assign(window,{
     const s=(()=>{try{return JSON.parse(localStorage.getItem("cesta_c_sessao"));}catch(e){return null;}})();
     if(s){
       const conta=await fsGet("clientes",s.id);
-      if(conta){ sessao={id:conta.id,nome:conta.nome}; entrarApp(); }
+      if(conta){ sessao={id:conta.id,nome:conta.nome,email:conta.email||"",telefone:conta.telefone||""}; entrarApp(); }
       else { montarPortalOfertas(); $("#tela-portal").classList.remove("escondido"); }
     }else { montarPortalOfertas(); $("#tela-portal").classList.remove("escondido"); }
   }catch(e){
