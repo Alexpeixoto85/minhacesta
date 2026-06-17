@@ -1824,6 +1824,33 @@
     cursor:pointer;
     border:none;
   }
+
+  .reco-acoes{
+    display:flex;
+    gap:8px;
+    margin-top:12px;
+  }
+
+  .reco-acoes .btn{
+    flex:1;
+    padding:11px 10px;
+    font-size:13px;
+    border-radius:8px;
+    box-shadow:none;
+  }
+
+  .reco-aceitar{
+    background:#fff;
+    color:var(--g2);
+    font-weight:800;
+  }
+
+  .reco-recusar{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    font-weight:700;
+  }
+  .reco-recusar:active{background:rgba(255,255,255,.22)}
   
   .comp{
     background:#fff;
@@ -2245,8 +2272,6 @@ function renderBanners(){
 function renderGradeProdutos(){
   const g=$("#grade-prod"); if(!g) return;
   let lista=cacheProdutos.slice();
-  // oculta produtos sem estoque (estoque definido e <= 0); produtos sem o campo continuam visíveis
-  lista=lista.filter(p=>!(typeof p.estoque==="number" && p.estoque<=0));
   if(filtroMerc!=="todos") lista=lista.filter(p=>p.supermercadoId===filtroMerc);
   if(filtroCat!=="todas") lista=lista.filter(p=>p.categoria===filtroCat);
   if(termoBusca.trim()){
@@ -2364,61 +2389,39 @@ function baixarLista(){
   toast("Lista baixada.");
 }
 
-function finalizarCompra(){
-  if(!carrinho.length) return toast("Lista vazia.",true);
-  const recos=calcularRecomendacao();
-  const nItens=carrinho.length;
-  let corpo;
-  if(recos.length){
-    const best=recos[0];
-    const completos=recos.filter(r=>r.cobertura===nItens);
-    const base=completos.length?completos:recos;
-    const economia=Math.max(...base.map(r=>r.total))-best.total;
-    const totalCarrinho=carrinho.reduce((s,i)=>s+i.preco*i.qtd,0);
-    const completo=best.cobertura===nItens;
-    corpo=`
-      <div class="reco" style="margin:0 0 4px">
-        <div class="et">🏆 Melhor lugar para comprar tudo num só lugar</div>
-        <h3>${best.loja.emoji||"🏬"} ${esc(best.loja.nome)}</h3>
-        <div class="cob">${best.cobertura} de ${nItens} ${nItens===1?"item disponível":"itens disponíveis"} aqui${best.faltando.length?` · falta: ${best.faltando.map(f=>esc(f.nome)).join(", ")}`:""}</div>
-        <div class="linhas">
-          <div class="bloco"><div class="n">${reais(best.total)}</div><div class="r">${completo?"total comprando tudo aqui":"total dos itens disponíveis"}</div></div>
-          <div class="bloco"><div class="n">${distLabel(best.dist)}</div><div class="r">${localCliente?"distância":"defina seu local"}</div></div>
-        </div>
-        ${economia>0.01?`<div class="eco">💰 Comprando tudo aqui você economiza até <b>${reais(economia)}</b> frente ao mercado mais caro.</div>`:`<div class="eco">Este é o melhor preço encontrado para sua lista.</div>`}
-        ${best.loja.lat!=null?`<a class="btn btn-mapa" href="https://www.google.com/maps/dir/?api=1&destination=${best.loja.lat},${best.loja.lng}" target="_blank">🗺️ Como chegar</a>`:`<button class="btn btn-mapa" onclick="abrirLocal()">📍 Definir minha localização</button>`}
-      </div>
-      ${recos.length>1?`<div style="font-size:12.5px;color:var(--muted);margin-top:10px">Comparação completa entre mercados está na sua lista, na seção de recomendação.</div>`:""}
-      <p style="font-size:12.5px;color:var(--muted);margin-top:10px">Ao enviar, sua lista vai para o(s) supermercado(s) escolhido(s) e você acompanha o status no Histórico.</p>`;
-  }else{
-    corpo=`<p style="color:var(--muted);font-size:14px">Não consegui calcular a melhor loja agora (defina sua localização e verifique se os produtos têm preço). Você ainda pode enviar o pedido normalmente.</p>`;
-  }
-  abrirModal("Finalizar pedido",corpo,
-    `<button class="btn fantasma" onclick="fecharModal()">Voltar</button>
-     <button class="btn" style="background:var(--amber);color:#3a1800" id="btn-enviar-ped">✓ Enviar pedido</button>`);
-  const b=$("#btn-enviar-ped"); if(b) b.onclick=()=>{ b.disabled=true; enviarPedido(); };
-}
-
-async function enviarPedido(){
-  if(!carrinho.length) return toast("Lista vazia.",true);
-  const total=carrinho.reduce((s,i)=>s+i.preco*i.qtd,0);
-  const agora=Date.now();
-  const grupos={};
-  carrinho.forEach(i=>{ const k=i.supermercadoId||"_sem"; (grupos[k]??=[]).push(i); });
-
-  // 1) histórico (lista completa, como antes) — melhor esforço
+/* ---- salva o histórico da lista completa (melhor esforço) ---- */
+async function _salvarHistoricoCompra(total){
   try{
     await fsAdd("historico",{clienteId:sessao.id,data:new Date().toISOString(),total,
       itens:carrinho.map(i=>({nome:i.nome,emoji:i.emoji,qtd:i.qtd,preco:i.preco,mercadoNome:i.mercadoNome,supermercadoId:i.supermercadoId||null}))});
   }catch(e){ console.error("Falha ao salvar histórico:",e); }
+}
 
-  // 2) um pedido por supermercado (nova coleção "pedidos")
+/*
+ * Envia o pedido apenas para os supermercadoId presentes em `idsPermitidos`.
+ * Isso garante que a lista nunca seja enviada para mais de um supermercado
+ * quando o cliente optar por escolher manualmente apenas 1 loja; e permite
+ * o envio "para o vencedor" quando o cliente aceita a sugestão.
+ * Itens cujo supermercadoId não esteja em idsPermitidos voltam a ficar pendentes
+ * na lista (não são removidos do carrinho).
+ */
+async function _enviarPedidoParaLojas(idsPermitidos){
+  const setPermitidos=new Set(idsPermitidos);
+  const itensEnviar=carrinho.filter(i=>i.supermercadoId && setPermitidos.has(i.supermercadoId));
+  if(!itensEnviar.length) return {pedidosCriados:0,erros:["sem-itens"],enviosZap:[]};
+
+  const total=itensEnviar.reduce((s,i)=>s+i.preco*i.qtd,0);
+  const agora=Date.now();
+  const grupos={};
+  itensEnviar.forEach(i=>{ (grupos[i.supermercadoId]??=[]).push(i); });
+
+  await _salvarHistoricoCompra(total);
+
   const enviosZap=[];
-  let pedidosCriados=0, semMercado=0;
+  let pedidosCriados=0;
   const erros=[];
   for(const [sid,itens] of Object.entries(grupos)){
     const totalGrupo=itens.reduce((s,i)=>s+i.preco*i.qtd,0);
-    if(sid==="_sem"){ semMercado+=itens.length; continue; } // itens sem supermercadoId (ex.: repetidos)
     const m = cacheMercados[sid] || null;
     try{
       const pid=await fsAdd("pedidos",{
@@ -2439,24 +2442,89 @@ async function enviarPedido(){
     }
   }
 
-  // se nada foi enviado e houve erro, avisa com a causa
-  if(pedidosCriados===0 && erros.length){
-    const permissao=erros.some(x=>/permission|insufficient/i.test(x));
-    return toast(permissao
-      ? "Pedido não enviado: o Firestore bloqueou a coleção 'pedidos'. Publique as regras."
-      : "Pedido não enviado: "+erros[0], true);
+  // remove do carrinho só o que foi efetivamente enviado
+  if(pedidosCriados>0){
+    carrinho=carrinho.filter(i=>!(i.supermercadoId && setPermitidos.has(i.supermercadoId)));
   }
 
-  carrinho=[];
+  return {pedidosCriados,erros,enviosZap};
+}
+
+function _modalResultadoPedido({pedidosCriados,erros,enviosZap}){
+  if(pedidosCriados===0 && erros.length){
+    const permissao=erros.some(x=>/permission|insufficient/i.test(x));
+    toast(permissao
+      ? "Pedido não enviado: o Firestore bloqueou a coleção 'pedidos'. Publique as regras."
+      : (erros[0]==="sem-itens" ? "Nenhum item dessa loja na lista." : "Pedido não enviado: "+erros[0]), true);
+    return;
+  }
+  const semMercado=carrinho.filter(i=>!i.supermercadoId).length;
+  const restantes=carrinho.length;
   const avisoSem = semMercado ? `<p style="color:var(--muted);font-size:12.5px;margin-bottom:10px">⚠️ ${semMercado} item(ns) sem loja vinculada (adicionados por "Repetir") não geraram pedido. Re-adicione pela aba Comprar para enviá-los.</p>` : "";
+  const avisoRestante = (restantes && restantes>semMercado) ? `<p style="color:var(--muted);font-size:12.5px;margin-bottom:10px">ℹ️ Os demais itens da lista continuam pendentes — finalize novamente para enviá-los a outra loja.</p>` : "";
   const corpoZap = enviosZap.length
     ? `<p style="color:var(--muted);font-size:14px;margin-bottom:12px">Envie a lista direto pelo WhatsApp da loja para agilizar o atendimento:</p>`
       + enviosZap.map(e=>`<a class="btn full" style="background:#25D366;margin-bottom:8px;display:block;text-align:center" href="${e.link}" target="_blank" rel="noopener">📲 Enviar para ${esc(e.emoji+" "+e.nome)}</a>`).join("")
-    : `<p style="color:var(--muted);font-size:14px">As lojas escolhidas ainda não têm WhatsApp cadastrado, mas o pedido foi registrado e elas o verão no painel.</p>`;
+    : `<p style="color:var(--muted);font-size:14px">A loja escolhida ainda não tem WhatsApp cadastrado, mas o pedido foi registrado e ela o verá no painel.</p>`;
   abrirModal("✅ Pedido enviado!",
-    `<p style="color:var(--g1);font-size:14.5px;margin-bottom:14px">Sua lista foi enviada ao(s) supermercado(s). Você receberá a confirmação aqui no app e pode acompanhar o status na aba <b>Histórico</b>.</p>${avisoSem}${corpoZap}`,
+    `<p style="color:var(--g1);font-size:14.5px;margin-bottom:14px">Sua lista foi enviada ao supermercado. Você receberá a confirmação aqui no app e pode acompanhar o status na aba <b>Histórico</b>.</p>${avisoSem}${avisoRestante}${corpoZap}`,
     `<button class="btn" onclick="fecharModal()">Concluir</button>`);
   abaCliente="historico"; telaCliente();
+}
+
+/* Aceitar a sugestão do card de recomendação → envia só para o supermercado vencedor */
+async function aceitarSugestao(){
+  const recos=calcularRecomendacao();
+  if(!recos.length) return toast("Adicione produtos para receber uma sugestão.",true);
+  const best=recos[0];
+  confirmar("Confirmar envio",
+    `Enviar a lista para ${best.loja.nome}? Apenas os itens disponíveis nessa loja serão enviados; os demais permanecerão na sua lista.`,
+    async()=>{ const r=await _enviarPedidoParaLojas([best.loja.id]); _modalResultadoPedido(r); },
+    "Aceitar e enviar");
+}
+
+/* Não aceitar a sugestão → cliente escolhe individualmente 1 única loja para enviar */
+function escolherLojaManual(){
+  const grupos={};
+  carrinho.forEach(i=>{ if(i.supermercadoId) (grupos[i.supermercadoId]??=[]).push(i); });
+  const ids=Object.keys(grupos);
+  if(!ids.length) return toast("Nenhum item da lista está vinculado a uma loja.",true);
+
+  const linhas=ids.map(sid=>{
+    const m=cacheMercados[sid]; const itens=grupos[sid];
+    const totalLoja=itens.reduce((s,i)=>s+i.preco*i.qtd,0);
+    const nome=m?m.nome:"Loja desconhecida"; const emoji=m?(m.emoji||"🏬"):"🏬";
+    return `<button class="btn fantasma full" style="justify-content:space-between;margin-bottom:8px" onclick="confirmarEnvioLojaUnica('${sid}')">
+      <span>${emoji} ${esc(nome)}</span>
+      <span style="font-weight:800">${reais(totalLoja)}</span>
+    </button>`;
+  }).join("");
+
+  abrirModal("Enviar para qual loja?",
+    `<p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Escolha <b>uma única loja</b> para receber o pedido. Os itens das demais lojas continuarão na sua lista até você decidir.</p>${linhas}`,
+    `<button class="btn fantasma" onclick="fecharModal()">Cancelar</button>`);
+}
+
+async function confirmarEnvioLojaUnica(sid){
+  const m=cacheMercados[sid]; const nome=m?m.nome:"essa loja";
+  fecharModal();
+  confirmar("Confirmar envio",
+    `Enviar a lista apenas para ${nome}? A lista não será enviada para nenhuma outra loja.`,
+    async()=>{ const r=await _enviarPedidoParaLojas([sid]); _modalResultadoPedido(r); },
+    "Enviar pedido");
+}
+
+async function finalizarCompra(){
+  if(!carrinho.length) return toast("Lista vazia.",true);
+  const recos=calcularRecomendacao();
+  if(!recos.length) return toast("Nenhum item da lista está vinculado a uma loja.",true);
+  const best=recos[0];
+  const outras=recos.length>1;
+  abrirModal("Para onde enviar o pedido?",
+    `<p style="color:var(--g1);font-size:14.5px;margin-bottom:14px">Sugerimos <b>${esc(best.loja.nome)}</b> como o melhor lugar para comprar tudo. Você pode aceitar a sugestão ou escolher manualmente para qual loja enviar — a lista nunca é enviada para mais de uma loja ao mesmo tempo.</p>`,
+    `<button class="btn full" style="margin-bottom:8px" onclick="fecharModal();aceitarSugestao()">🏆 Aceitar sugestão (${esc(best.loja.nome)})</button>
+     ${outras?`<button class="btn fantasma full" onclick="fecharModal();escolherLojaManual()">Não aceitar — escolher outra loja</button>`:""}
+     <button class="btn fantasma full" style="margin-top:8px;box-shadow:none;color:var(--muted)" onclick="fecharModal()">Cancelar</button>`);
 }
 
 /* ====== ABA HISTÓRICO ====== */
@@ -2628,7 +2696,7 @@ function abrirLocal(){
 function calcularRecomendacao(){
   const itens=carrinho; if(!itens.length) return [];
   const resultados=Object.values(cacheMercados).map(m=>{
-    const prodsLoja=cacheProdutos.filter(p=>p.supermercadoId===m.id && !(typeof p.estoque==="number" && p.estoque<=0));
+    const prodsLoja=cacheProdutos.filter(p=>p.supermercadoId===m.id);
     let total=0; const encontrados=[],faltando=[];
     for(const it of itens){
       const cands=prodsLoja.filter(p=>mesmaCoisa(p.nome,it.nome));
@@ -2662,6 +2730,10 @@ function recomendacaoHTML(){
       <div class="bloco"><div class="n">${distLabel(best.dist)}</div><div class="r">${localCliente?"distância":"defina seu local"}</div></div>
     </div>
     ${economia>0.01?`<div class="eco">💰 Economia de até <b>${reais(economia)}</b> frente ao mercado mais caro.</div>`:""}
+    <div class="reco-acoes">
+      <button class="btn reco-aceitar" onclick="aceitarSugestao()">✓ Aceitar sugestão</button>
+      ${recos.length>1?`<button class="btn reco-recusar" onclick="escolherLojaManual()">Não aceitar</button>`:""}
+    </div>
     ${best.loja.lat!=null?`<a class="btn btn-mapa" href="https://www.google.com/maps/dir/?api=1&destination=${best.loja.lat},${best.loja.lng}" target="_blank">🗺️ Como chegar</a>`:`<button class="btn btn-mapa" onclick="abrirLocal()">📍 Definir minha localização</button>`}
   </div>`;
   if(recos.length>1){
@@ -2689,8 +2761,9 @@ async function semearCliente(){
 /* ====== init ====== */
 Object.assign(window,{
   trocarAba,fazerLogin,criarConta,sair,irCliente,setFiltroMerc,setFiltroCat,buscar,
-  addCarrinho,marcarItem,mudarQtd,removerItem,limparLista,baixarLista,finalizarCompra,enviarPedido,
-  toggleHist,repetirCompra,fecharModal,carMover,abrirLocal
+  addCarrinho,marcarItem,mudarQtd,removerItem,limparLista,baixarLista,finalizarCompra,
+  toggleHist,repetirCompra,fecharModal,carMover,abrirLocal,
+  aceitarSugestao,escolherLojaManual,confirmarEnvioLojaUnica
 });
 
 (async function init(){
