@@ -2031,7 +2031,7 @@
    ============================================================ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import {
-  getFirestore, collection, doc, getDoc, getDocs, addDoc,
+  getFirestore, collection, doc, getDoc, getDocs, addDoc, deleteDoc,
   query, where, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
@@ -2050,6 +2050,7 @@ const db  = getFirestore(app);
 async function fsAll(col){ const s=await getDocs(collection(db,col)); return s.docs.map(d=>({id:d.id,...d.data()})); }
 async function fsGet(col,id){ const s=await getDoc(doc(db,col,id)); return s.exists()?{id:s.id,...s.data()}:null; }
 async function fsAdd(col,obj){ const r=await addDoc(collection(db,col),obj); return r.id; }
+async function fsDelete(col,id){ await deleteDoc(doc(db,col,id)); }
 async function fsWhere(col,campo,val){ const s=await getDocs(query(collection(db,col),where(campo,"==",val))); return s.docs.map(d=>({id:d.id,...d.data()})); }
 
 const $ = s=>document.querySelector(s);
@@ -2472,14 +2473,19 @@ function _modalResultadoPedido({pedidosCriados,erros,enviosZap}){
   abaCliente="historico"; telaCliente();
 }
 
-/* Aceitar a sugestão do card de recomendação → envia só para o supermercado vencedor */
+/* Aceitar a sugestão do card de recomendação → envia só para o supermercado vencedor
+   e, em seguida, limpa toda a lista de compras automaticamente. */
 async function aceitarSugestao(){
   const recos=calcularRecomendacao();
   if(!recos.length) return toast("Adicione produtos para receber uma sugestão.",true);
   const best=recos[0];
   confirmar("Confirmar envio",
-    `Enviar a lista para ${best.loja.nome}? Apenas os itens disponíveis nessa loja serão enviados; os demais permanecerão na sua lista.`,
-    async()=>{ const r=await _enviarPedidoParaLojas([best.loja.id]); _modalResultadoPedido(r); },
+    `Enviar a lista para ${best.loja.nome}? Ao confirmar, sua lista de compras será enviada e limpa automaticamente.`,
+    async()=>{
+      const r=await _enviarPedidoParaLojas([best.loja.id]);
+      if(r.pedidosCriados>0) carrinho=[]; // limpa a lista inteira após aceitar a sugestão
+      _modalResultadoPedido(r);
+    },
     "Aceitar e enviar");
 }
 
@@ -2555,7 +2561,8 @@ async function renderHistorico(){
   let hist=[];
   try{ hist=(await fsWhere("historico","clienteId",sessao.id)).sort((a,b)=>new Date(b.data)-new Date(a.data)); }
   catch(e){ console.error(e); }
-  let html=`<div class="historico-inner"><div class="titulo-secao"><div><h2>Histórico</h2><div class="sub">Seus pedidos e listas finalizadas</div></div></div>`;
+  let html=`<div class="historico-inner"><div class="titulo-secao"><div><h2>Histórico</h2><div class="sub">Seus pedidos e listas finalizadas</div></div>
+    ${hist.length?`<button class="btn fantasma peq" onclick="limparHistorico()">Limpar</button>`:""}</div>`;
   html+=pedidosStatusHTML();
   if(!hist.length){ c.innerHTML=html+vazioHTML("🕘","Sem compras ainda","Finalize uma lista para vê-la aqui","irCliente('comprar')","🛍️ Começar a comprar")+"</div>"; return; }
   html+=`<div class="grade">`;
@@ -2575,6 +2582,22 @@ async function renderHistorico(){
   html+=`</div></div>`; c.innerHTML=html; window.__hist=hist;
 }
 function toggleHist(k){ $("#hist-"+k)?.classList.toggle("aberto"); }
+async function limparHistorico(){
+  const hist=window.__hist||[];
+  if(!hist.length) return toast("Não há histórico para limpar.",true);
+  confirmar("Limpar histórico","Remove permanentemente todas as listas de compras finalizadas. Os pedidos enviados aos supermercados não serão afetados.",
+    async()=>{
+      try{
+        await Promise.all(hist.map(h=>fsDelete("historico",h.id)));
+        toast("Histórico limpo.");
+        window.__hist=[];
+        renderHistorico();
+      }catch(e){
+        console.error("Falha ao limpar histórico:",e);
+        toast("Não foi possível limpar o histórico. Verifique as regras do Firestore.",true);
+      }
+    },"Limpar histórico");
+}
 function repetirCompra(k){
   const h=window.__hist?.[k]; if(!h) return;
   h.itens.forEach(it=>{
@@ -2763,7 +2786,7 @@ Object.assign(window,{
   trocarAba,fazerLogin,criarConta,sair,irCliente,setFiltroMerc,setFiltroCat,buscar,
   addCarrinho,marcarItem,mudarQtd,removerItem,limparLista,baixarLista,finalizarCompra,
   toggleHist,repetirCompra,fecharModal,carMover,abrirLocal,
-  aceitarSugestao,escolherLojaManual,confirmarEnvioLojaUnica
+  aceitarSugestao,escolherLojaManual,confirmarEnvioLojaUnica,limparHistorico
 });
 
 (async function init(){
