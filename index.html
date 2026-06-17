@@ -2245,6 +2245,8 @@ function renderBanners(){
 function renderGradeProdutos(){
   const g=$("#grade-prod"); if(!g) return;
   let lista=cacheProdutos.slice();
+  // oculta produtos sem estoque (estoque definido e <= 0); produtos sem o campo continuam visíveis
+  lista=lista.filter(p=>!(typeof p.estoque==="number" && p.estoque<=0));
   if(filtroMerc!=="todos") lista=lista.filter(p=>p.supermercadoId===filtroMerc);
   if(filtroCat!=="todas") lista=lista.filter(p=>p.categoria===filtroCat);
   if(termoBusca.trim()){
@@ -2591,7 +2593,7 @@ function abrirLocal(){
 function calcularRecomendacao(){
   const itens=carrinho; if(!itens.length) return [];
   const resultados=Object.values(cacheMercados).map(m=>{
-    const prodsLoja=cacheProdutos.filter(p=>p.supermercadoId===m.id);
+    const prodsLoja=cacheProdutos.filter(p=>p.supermercadoId===m.id && !(typeof p.estoque==="number" && p.estoque<=0));
     let total=0; const encontrados=[],faltando=[];
     for(const it of itens){
       const cands=prodsLoja.filter(p=>mesmaCoisa(p.nome,it.nome));
