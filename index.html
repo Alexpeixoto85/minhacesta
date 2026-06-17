@@ -1958,6 +1958,83 @@
     color:var(--red);
   }
 
+  /* ── MÓDULO: OFERTAS DE CLIENTES ────────────────────────────── */
+  .ofertas-inner{padding:12px 12px 0}
+  .oferta-cliente-card{
+    background:#fff;border-radius:12px;
+    box-shadow:0 2px 8px rgba(7,26,16,.07);
+    overflow:hidden;margin-bottom:14px;
+  }
+  .oferta-cliente-card .oc-banner{
+    min-height:90px;display:flex;flex-direction:column;justify-content:flex-end;
+    padding:14px;color:#fff;position:relative;overflow:hidden;
+    background:linear-gradient(130deg,var(--g4),var(--g2));
+  }
+  .oferta-cliente-card .oc-banner .oc-bg{
+    position:absolute;inset:0;background-size:cover;background-position:center;z-index:0;
+  }
+  .oferta-cliente-card .oc-banner .oc-bg::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(transparent 20%,rgba(0,0,0,.7));
+  }
+  .oferta-cliente-card .oc-banner>*{position:relative;z-index:1}
+  .oferta-cliente-card .oc-banner h4{font-size:16px;font-weight:800;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.3)}
+  .oferta-cliente-card .oc-banner p{font-size:12px;opacity:.9}
+  .oferta-cliente-card .oc-meta{
+    padding:10px 14px;display:flex;align-items:center;gap:8px;
+    border-bottom:1px solid var(--line);
+  }
+  .oc-autor{font-size:12px;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .oc-autor b{color:var(--g2);font-weight:700}
+  .oc-validade{font-size:11px;color:var(--muted);white-space:nowrap}
+  .oc-acoes{padding:10px 14px;display:flex;gap:8px;align-items:center}
+  .btn-comentar{
+    display:inline-flex;align-items:center;gap:5px;
+    background:var(--g9);color:var(--g2);
+    padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;
+    border:1.5px solid var(--line);transition:.12s;cursor:pointer;
+  }
+  .btn-comentar:active{background:var(--g7)}
+  .oc-cont-comentarios{padding:0 14px 12px}
+  .comentario-item{
+    display:flex;gap:8px;padding:8px 0;
+    border-top:1px solid var(--g8);
+  }
+  .comentario-item:first-child{border-top:none}
+  .com-avatar{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--g3);color:#fff;
+    display:grid;place-items:center;
+    font-size:13px;font-weight:800;flex-shrink:0;
+  }
+  .com-corpo{flex:1;min-width:0}
+  .com-autor{font-size:11.5px;font-weight:700;color:var(--g2)}
+  .com-texto{font-size:12.5px;color:var(--ink);margin-top:1px;line-height:1.4;word-break:break-word}
+  .com-data{font-size:10.5px;color:var(--muted);margin-top:2px}
+  .tag-pendente{background:#fff3cd;color:#856404;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px}
+  .tag-aprovada{background:#d4edda;color:#155724;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px}
+  .btn-nova-oferta-cli{
+    display:flex;align-items:center;gap:8px;
+    background:var(--g3);color:#fff;
+    padding:12px 16px;border-radius:12px;
+    font-weight:700;font-size:14px;
+    box-shadow:0 2px 8px rgba(15,65,40,.25);
+    margin-bottom:14px;width:100%;justify-content:center;
+    transition:.15s;cursor:pointer;border:none;
+  }
+  .btn-nova-oferta-cli:active{opacity:.85;transform:scale(.98)}
+  .minha-oferta-pendente{
+    background:var(--g9);border:1.5px dashed var(--g5);
+    border-radius:12px;padding:14px 16px;margin-bottom:12px;
+  }
+  .minha-oferta-pendente .mp-titulo{font-weight:700;font-size:14px;color:var(--g2);margin-bottom:4px}
+  .minha-oferta-pendente .mp-desc{font-size:12.5px;color:var(--muted)}
+  .oferta-form-area textarea{
+    width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;
+    background:var(--g9);color:var(--ink);font-size:15px;resize:vertical;min-height:80px;
+  }
+  .oferta-form-area textarea:focus{outline:none;border-color:var(--g4);background:#fff;box-shadow:0 0 0 3px rgba(47,129,82,.12)}
+
 </style>
 </head>
 <body>
@@ -2031,8 +2108,8 @@
    ============================================================ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import {
-  getFirestore, collection, doc, getDoc, getDocs, addDoc, deleteDoc,
-  query, where, onSnapshot
+  getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc,
+  query, where, orderBy, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -2050,6 +2127,8 @@ const db  = getFirestore(app);
 async function fsAll(col){ const s=await getDocs(collection(db,col)); return s.docs.map(d=>({id:d.id,...d.data()})); }
 async function fsGet(col,id){ const s=await getDoc(doc(db,col,id)); return s.exists()?{id:s.id,...s.data()}:null; }
 async function fsAdd(col,obj){ const r=await addDoc(collection(db,col),obj); return r.id; }
+async function fsSet(col,id,obj){ await setDoc(doc(db,col,id),obj); }
+async function fsUpd(col,id,obj){ await updateDoc(doc(db,col,id),obj); }
 async function fsDelete(col,id){ await deleteDoc(doc(db,col,id)); }
 async function fsWhere(col,campo,val){ const s=await getDocs(query(collection(db,col),where(campo,"==",val))); return s.docs.map(d=>({id:d.id,...d.data()})); }
 
@@ -2083,9 +2162,11 @@ window.fecharModal=fecharModal;
 let sessao=null;
 let carrinho=[];
 let cacheProdutos=[], cacheOfertas=[], cacheMercados={}, cachePatrocinados=[], cachePedidos=[];
+let cacheOfertasCli=[], cacheComentarios={};
 const _pedStatus={};
 let abaCliente="comprar", filtroMerc="todos", filtroCat="todas", termoBusca="";
 let unsubProdutos=null, unsubOfertas=null, unsubMercados=null, unsubPatro=null, unsubPedidos=null;
+let unsubOfertasCli=null, unsubComentarios={};
 let localCliente=null;   // {lat,lng,label,cep}
 
 /* ====== utilidades de comparação/distância ====== */
@@ -2147,7 +2228,8 @@ async function criarConta(){
 function sair(){
   sessao=null; carrinho=[];
   if(unsubProdutos)unsubProdutos(); if(unsubOfertas)unsubOfertas(); if(unsubMercados)unsubMercados(); if(unsubPatro)unsubPatro(); if(unsubPedidos)unsubPedidos();
-  unsubProdutos=unsubOfertas=unsubMercados=unsubPatro=unsubPedidos=null;
+  if(unsubOfertasCli)unsubOfertasCli();
+  unsubProdutos=unsubOfertas=unsubMercados=unsubPatro=unsubPedidos=unsubOfertasCli=null;
   try{ localStorage.removeItem("cesta_c_sessao"); }catch(e){}
   $("#topo").classList.add("escondido"); $("#conteudo").classList.add("escondido");
   $("#tela-portal").classList.remove("escondido");
@@ -2187,6 +2269,14 @@ function ligarSincronismo(){
     cachePatrocinados=snap.docs.map(d=>({id:d.id,...d.data()}));
     if(sessao) montarRodapePatro();
   },err=>{ /* coleção pode não ter permissão ainda */ });
+  // ofertas cadastradas por clientes (apenas aprovadas para visualização)
+  unsubOfertasCli=onSnapshot(collection(db,"ofertasClientes"),snap=>{
+    cacheOfertasCli=snap.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
+    if(sessao && abaCliente==="ofertas") renderOfertasClientes();
+    else if(sessao) telaCliente(); // atualiza badge
+  },err=>{ console.warn("ofertasClientes:",err); });
+
   unsubPedidos=onSnapshot(query(collection(db,"pedidos"),where("clienteId","==",sessao.id)),snap=>{
     const novos=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
     novos.forEach(p=>{
@@ -2206,6 +2296,7 @@ function ligarSincronismo(){
 /* ====== navegação ====== */
 function telaCliente(){
   const nQtd=carrinho.reduce((s,i)=>s+i.qtd,0);
+  const nOfCli=cacheOfertasCli.filter(o=>o.status==="aprovada").length;
   $("#conteudo").innerHTML=`
     <div class="barra-secoes">
       <button class="${abaCliente==='comprar'?'on':''}" onclick="irCliente('comprar')">
@@ -2213,6 +2304,9 @@ function telaCliente(){
       </button>
       <button class="${abaCliente==='lista'?'on':''}" onclick="irCliente('lista')">
         <span class="tab-ic">🧺</span><span>Minha lista</span>${nQtd?`<span class="badge">${nQtd}</span>`:""}
+      </button>
+      <button class="${abaCliente==='ofertas'?'on':''}" onclick="irCliente('ofertas')">
+        <span class="tab-ic">🏷️</span><span>Ofertas</span>${nOfCli?`<span class="badge" style="background:var(--amber);color:#3a1800">${nOfCli}</span>`:""}
       </button>
       <button class="${abaCliente==='historico'?'on':''}" onclick="irCliente('historico')">
         <span class="tab-ic">🕘</span><span>Histórico</span>
@@ -2222,10 +2316,166 @@ function telaCliente(){
     <div id="rodape-patro" class="rodape-patro escondido"></div>`;
   if(abaCliente==="comprar") renderComprar();
   else if(abaCliente==="lista") renderLista();
+  else if(abaCliente==="ofertas") renderOfertasClientes();
   else renderHistorico();
   montarRodapePatro();
 }
 function irCliente(aba){ abaCliente=aba; telaCliente(); }
+
+/* ====== ABA OFERTAS DE CLIENTES ====== */
+function renderOfertasClientes(){
+  const c=$("#cliente-corpo"); if(!c) return;
+  const ofertasAprovadas=cacheOfertasCli.filter(o=>o.status==="aprovada");
+  const minhasPendentes=cacheOfertasCli.filter(o=>o.clienteId===sessao.id && o.status==="pendente");
+
+  let html=`<div class="ofertas-inner">
+    <div class="titulo-secao" style="margin-bottom:12px">
+      <div><h2 style="font-size:20px">Ofertas da comunidade</h2><div class="sub" style="font-size:12px">Compartilhe e descubra ofertas encontradas por outros clientes</div></div>
+    </div>
+    <button class="btn-nova-oferta-cli" onclick="abrirFormOfertaCli()">🏷️ Publicar uma oferta que encontrei</button>`;
+
+  if(minhasPendentes.length){
+    html+=`<div style="margin-bottom:14px">`;
+    for(const o of minhasPendentes){
+      html+=`<div class="minha-oferta-pendente">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
+          <div class="mp-titulo">${esc(o.titulo)}</div>
+          <span class="tag-pendente">⏳ Aguardando</span>
+        </div>
+        <div class="mp-desc">${esc(o.descricao||"")}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Aguardando aprovação do administrador para aparecer para todos.</div>
+      </div>`;
+    }
+    html+=`</div>`;
+  }
+
+  if(!ofertasAprovadas.length){
+    html+=vazioHTML("🏷️","Nenhuma oferta ainda","Seja o primeiro a compartilhar uma oferta!","abrirFormOfertaCli()","🏷️ Publicar oferta");
+  } else {
+    for(const o of ofertasAprovadas){
+      const comentarios=cacheComentarios[o.id]||[];
+      const bgStyle=o.foto?`background-image:url('${o.foto}')`:"";
+      html+=`<div class="oferta-cliente-card" id="oc-${o.id}">
+        <div class="oc-banner ${o.foto?'tem-foto':''}">
+          ${o.foto?`<div class="oc-bg" style="${bgStyle}"></div>`:""}
+          <h4>${esc(o.titulo)}</h4>
+          <p>${esc(o.descricao||"")}</p>
+        </div>
+        <div class="oc-meta">
+          <div class="oc-autor">por <b>${esc(o.clienteNome||"Cliente")}</b></div>
+          ${o.local?`<div class="oc-validade">📍 ${esc(o.local)}</div>`:""}
+          ${o.validade?`<div class="oc-validade" style="margin-left:8px">⏱ ${esc(o.validade)}</div>`:""}
+        </div>
+        <div class="oc-acoes">
+          <button class="btn-comentar" onclick="abrirComentarios('${o.id}')">
+            💬 Comentar${comentarios.length?` (${comentarios.length})`:""}
+          </button>
+        </div>
+        <div class="oc-cont-comentarios" id="coms-${o.id}" style="display:none"></div>
+      </div>`;
+    }
+  }
+  html+=`</div>`;
+  c.innerHTML=html;
+}
+
+async function abrirFormOfertaCli(){
+  abrirModal("Publicar oferta",`
+    <div class="campo"><label>Título da oferta</label><input id="ocf-titulo" placeholder="Ex.: Arroz 5kg por R$ 18 no Bom Preço"></div>
+    <div class="campo"><label>Descrição</label><textarea class="oferta-form-area" id="ocf-desc" placeholder="Detalhes da oferta: produto, preço, onde encontrou..."></textarea></div>
+    <div class="campo"><label>Local (opcional)</label><input id="ocf-local" placeholder="Ex.: Mercado Bom Preço — Farol"></div>
+    <div class="campo"><label>Validade (opcional)</label><input id="ocf-validade" placeholder="Ex.: Só hoje, Até sexta"></div>
+    <div class="campo"><label>Link da imagem (opcional)</label><input id="ocf-foto" placeholder="https://..."></div>
+    <div style="background:var(--g9);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--muted);margin-top:4px">
+      ℹ️ Sua oferta será revisada pelo administrador antes de aparecer para todos os clientes.
+    </div>
+  `,`
+    <button class="btn fantasma" onclick="fecharModal()">Cancelar</button>
+    <button class="btn" style="background:var(--g3)" id="ocf-salvar">Enviar para análise</button>
+  `);
+  $("#ocf-salvar").onclick=async()=>{
+    const titulo=$("#ocf-titulo").value.trim();
+    const descricao=$("#ocf-desc").value.trim();
+    if(!titulo) return toast("Dê um título à oferta.",true);
+    if(!descricao) return toast("Descreva a oferta.",true);
+    $("#ocf-salvar").disabled=true;
+    try{
+      await fsAdd("ofertasClientes",{
+        titulo,descricao,
+        local:$("#ocf-local").value.trim(),
+        validade:$("#ocf-validade").value.trim(),
+        foto:$("#ocf-foto").value.trim(),
+        clienteId:sessao.id,clienteNome:sessao.nome,clienteEmail:sessao.email,
+        status:"pendente",criadoEm:Date.now()
+      });
+      toast("Oferta enviada! Aguardando aprovação.");
+      fecharModal();
+      irCliente("ofertas");
+    }catch(e){ console.error(e); toast("Erro ao enviar oferta.",true); $("#ocf-salvar").disabled=false; }
+  };
+}
+
+async function abrirComentarios(ofertaId){
+  const box=document.getElementById("coms-"+ofertaId);
+  if(!box) return;
+  const visivel=box.style.display!=="none";
+  if(visivel){ box.style.display="none"; return; }
+  box.style.display="block";
+  box.innerHTML=`<div style="padding:10px 0;text-align:center;font-size:13px;color:var(--muted)">Carregando...</div>`;
+
+  try{
+    const snap=await getDocs(query(collection(db,"comentariosOfertas"),where("ofertaId","==",ofertaId)));
+    const comentarios=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.criadoEm||0)-(b.criadoEm||0));
+    cacheComentarios[ofertaId]=comentarios;
+    _renderComentariosBox(box,ofertaId,comentarios);
+  }catch(e){ box.innerHTML=`<div style="padding:10px;color:var(--red);font-size:12px">Erro ao carregar comentários.</div>`; }
+}
+
+function _renderComentariosBox(box,ofertaId,comentarios){
+  let html=``;
+  if(comentarios.length){
+    for(const c of comentarios){
+      const ini=(c.autorNome||"?")[0].toUpperCase();
+      const data=c.criadoEm?new Date(c.criadoEm).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
+      html+=`<div class="comentario-item">
+        <div class="com-avatar">${ini}</div>
+        <div class="com-corpo">
+          <div class="com-autor">${esc(c.autorNome||"Cliente")}</div>
+          <div class="com-texto">${esc(c.texto)}</div>
+          <div class="com-data">${data}</div>
+        </div>
+      </div>`;
+    }
+  } else {
+    html+=`<div style="padding:8px 0;font-size:12.5px;color:var(--muted);text-align:center">Nenhum comentário ainda. Seja o primeiro!</div>`;
+  }
+  html+=`<div style="display:flex;gap:8px;margin-top:10px;align-items:flex-start">
+    <textarea id="com-input-${ofertaId}" placeholder="Escreva um comentário..." style="flex:1;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;resize:none;min-height:40px;background:var(--g9);font-family:inherit" rows="1"></textarea>
+    <button onclick="enviarComentario('${ofertaId}')" style="background:var(--g3);color:#fff;border:none;border-radius:8px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;flex-shrink:0">Enviar</button>
+  </div>`;
+  box.innerHTML=html;
+}
+
+async function enviarComentario(ofertaId){
+  const input=document.getElementById("com-input-"+ofertaId);
+  const texto=input?input.value.trim():"";
+  if(!texto) return toast("Escreva algo antes de enviar.",true);
+  input.disabled=true;
+  try{
+    await fsAdd("comentariosOfertas",{
+      ofertaId,texto,
+      autorId:sessao.id,autorNome:sessao.nome,
+      criadoEm:Date.now()
+    });
+    // recarrega comentários
+    const snap=await getDocs(query(collection(db,"comentariosOfertas"),where("ofertaId","==",ofertaId)));
+    const comentarios=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.criadoEm||0)-(b.criadoEm||0));
+    cacheComentarios[ofertaId]=comentarios;
+    const box=document.getElementById("coms-"+ofertaId);
+    if(box) _renderComentariosBox(box,ofertaId,comentarios);
+    toast("Comentário publicado!");
+  }catch(e){ console.error(e); toast("Erro ao enviar comentário.",true); if(input) input.disabled=false; }
+}
 
 /* ====== ABA COMPRAR ====== */
 function renderComprar(){
@@ -2786,7 +3036,8 @@ Object.assign(window,{
   trocarAba,fazerLogin,criarConta,sair,irCliente,setFiltroMerc,setFiltroCat,buscar,
   addCarrinho,marcarItem,mudarQtd,removerItem,limparLista,baixarLista,finalizarCompra,
   toggleHist,repetirCompra,fecharModal,carMover,abrirLocal,
-  aceitarSugestao,escolherLojaManual,confirmarEnvioLojaUnica,limparHistorico
+  aceitarSugestao,escolherLojaManual,confirmarEnvioLojaUnica,limparHistorico,
+  abrirFormOfertaCli,abrirComentarios,enviarComentario
 });
 
 (async function init(){
