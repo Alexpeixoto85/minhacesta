@@ -1824,33 +1824,6 @@
     cursor:pointer;
     border:none;
   }
-
-  .reco-acoes{
-    display:flex;
-    gap:8px;
-    margin-top:12px;
-  }
-
-  .reco-acoes .btn{
-    flex:1;
-    padding:11px 10px;
-    font-size:13px;
-    border-radius:8px;
-    box-shadow:none;
-  }
-
-  .reco-aceitar{
-    background:#fff;
-    color:var(--g2);
-    font-weight:800;
-  }
-
-  .reco-recusar{
-    background:rgba(255,255,255,.14);
-    color:#fff;
-    font-weight:700;
-  }
-  .reco-recusar:active{background:rgba(255,255,255,.22)}
   
   .comp{
     background:#fff;
@@ -1958,82 +1931,39 @@
     color:var(--red);
   }
 
-  /* ── MÓDULO: OFERTAS DE CLIENTES ────────────────────────────── */
-  .ofertas-inner{padding:12px 12px 0}
-  .oferta-cliente-card{
-    background:#fff;border-radius:12px;
-    box-shadow:0 2px 8px rgba(7,26,16,.07);
-    overflow:hidden;margin-bottom:14px;
+  /* ── Comunidade (ofertas enviadas por clientes) ──────────────────── */
+  .campo textarea{
+    width:100%;padding:13px 15px;border:1.5px solid var(--line);border-radius:var(--r-sm);
+    background:var(--g9);color:var(--ink);font-size:15px;min-height:90px;resize:vertical;
+    transition:.15s;font-family:inherit;
   }
-  .oferta-cliente-card .oc-banner{
-    min-height:90px;display:flex;flex-direction:column;justify-content:flex-end;
-    padding:14px;color:#fff;position:relative;overflow:hidden;
-    background:linear-gradient(130deg,var(--g4),var(--g2));
-  }
-  .oferta-cliente-card .oc-banner .oc-bg{
-    position:absolute;inset:0;background-size:cover;background-position:center;z-index:0;
-  }
-  .oferta-cliente-card .oc-banner .oc-bg::after{
-    content:"";position:absolute;inset:0;
-    background:linear-gradient(transparent 20%,rgba(0,0,0,.7));
-  }
-  .oferta-cliente-card .oc-banner>*{position:relative;z-index:1}
-  .oferta-cliente-card .oc-banner h4{font-size:16px;font-weight:800;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.3)}
-  .oferta-cliente-card .oc-banner p{font-size:12px;opacity:.9}
-  .oferta-cliente-card .oc-meta{
-    padding:10px 14px;display:flex;align-items:center;gap:8px;
-    border-bottom:1px solid var(--line);
-  }
-  .oc-autor{font-size:12px;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .oc-autor b{color:var(--g2);font-weight:700}
-  .oc-validade{font-size:11px;color:var(--muted);white-space:nowrap}
-  .oc-acoes{padding:10px 14px;display:flex;gap:8px;align-items:center}
-  .btn-comentar{
-    display:inline-flex;align-items:center;gap:5px;
-    background:var(--g9);color:var(--g2);
-    padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;
-    border:1.5px solid var(--line);transition:.12s;cursor:pointer;
-  }
-  .btn-comentar:active{background:var(--g7)}
-  .oc-cont-comentarios{padding:0 14px 12px}
-  .comentario-item{
-    display:flex;gap:8px;padding:8px 0;
-    border-top:1px solid var(--g8);
-  }
-  .comentario-item:first-child{border-top:none}
-  .com-avatar{
-    width:30px;height:30px;border-radius:50%;
-    background:var(--g3);color:#fff;
-    display:grid;place-items:center;
-    font-size:13px;font-weight:800;flex-shrink:0;
-  }
-  .com-corpo{flex:1;min-width:0}
-  .com-autor{font-size:11.5px;font-weight:700;color:var(--g2)}
-  .com-texto{font-size:12.5px;color:var(--ink);margin-top:1px;line-height:1.4;word-break:break-word}
-  .com-data{font-size:10.5px;color:var(--muted);margin-top:2px}
-  .tag-pendente{background:#fff3cd;color:#856404;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px}
-  .tag-aprovada{background:#d4edda;color:#155724;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px}
-  .btn-nova-oferta-cli{
-    display:flex;align-items:center;gap:8px;
-    background:var(--g3);color:#fff;
-    padding:12px 16px;border-radius:12px;
-    font-weight:700;font-size:14px;
-    box-shadow:0 2px 8px rgba(15,65,40,.25);
-    margin-bottom:14px;width:100%;justify-content:center;
-    transition:.15s;cursor:pointer;border:none;
-  }
-  .btn-nova-oferta-cli:active{opacity:.85;transform:scale(.98)}
-  .minha-oferta-pendente{
-    background:var(--g9);border:1.5px dashed var(--g5);
-    border-radius:12px;padding:14px 16px;margin-bottom:12px;
-  }
-  .minha-oferta-pendente .mp-titulo{font-weight:700;font-size:14px;color:var(--g2);margin-bottom:4px}
-  .minha-oferta-pendente .mp-desc{font-size:12.5px;color:var(--muted)}
-  .oferta-form-area textarea{
-    width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;
-    background:var(--g9);color:var(--ink);font-size:15px;resize:vertical;min-height:80px;
-  }
-  .oferta-form-area textarea:focus{outline:none;border-color:var(--g4);background:#fff;box-shadow:0 0 0 3px rgba(47,129,82,.12)}
+  .campo textarea:focus{outline:none;border-color:var(--g4);background:#fff;box-shadow:0 0 0 3px rgba(47,129,82,.12)}
+  .com-wrap{padding:18px 16px 0}
+  .com-cab{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .com-cab h2{font-size:20px;color:var(--g1)}
+  .com-cab .sub{font-size:12.5px;color:var(--muted);margin-top:2px;max-width:280px}
+  .minhas-ofertas{margin-bottom:20px}
+  .minhas-ofertas .tit{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--g3);margin-bottom:8px}
+  .mo-item{background:#fff;border-radius:var(--r-md);box-shadow:var(--sh-sm);padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .mo-item b{font-size:13.5px;color:var(--ink);font-weight:700;display:block}
+  .mo-item .mot{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .tag-status{font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+  .tag-status.pendente{background:#fff4e0;color:var(--amber-dk)}
+  .tag-status.aprovada{background:var(--g8);color:var(--g3)}
+  .tag-status.rejeitada{background:var(--red-lt);color:var(--red)}
+  .com-card{margin-bottom:14px}
+  .com-card h3{font-size:17px;margin-bottom:4px;color:var(--ink)}
+  .com-card .autor{font-size:11.5px;color:var(--muted);margin:0 0 9px}
+  .com-card img.foto-oferta{width:100%;border-radius:var(--r-md);margin-bottom:10px;max-height:180px;object-fit:cover;display:block}
+  .com-card .desc{font-size:14px;color:var(--ink);line-height:1.5;margin-bottom:12px}
+  .com-card .rod-com{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:10px}
+  .lista-comentarios{max-height:280px;overflow-y:auto}
+  .coment-item{padding:9px 0;border-bottom:1px solid var(--line)}
+  .coment-item:last-child{border-bottom:none}
+  .coment-item b{font-size:13px;color:var(--g2)}
+  .coment-item .coment-data{font-size:10.5px;color:var(--muted);margin-left:6px}
+  .coment-item p{font-size:13.5px;color:var(--ink);margin-top:3px;line-height:1.4}
+  .sem-coment{color:var(--muted);font-size:13.5px;text-align:center;padding:18px 0}
 
 </style>
 </head>
@@ -2108,8 +2038,8 @@
    ============================================================ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 import {
-  getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc,
-  query, where, orderBy, onSnapshot, serverTimestamp
+  getFirestore, collection, doc, getDoc, getDocs, addDoc,
+  query, where, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -2127,9 +2057,6 @@ const db  = getFirestore(app);
 async function fsAll(col){ const s=await getDocs(collection(db,col)); return s.docs.map(d=>({id:d.id,...d.data()})); }
 async function fsGet(col,id){ const s=await getDoc(doc(db,col,id)); return s.exists()?{id:s.id,...s.data()}:null; }
 async function fsAdd(col,obj){ const r=await addDoc(collection(db,col),obj); return r.id; }
-async function fsSet(col,id,obj){ await setDoc(doc(db,col,id),obj); }
-async function fsUpd(col,id,obj){ await updateDoc(doc(db,col,id),obj); }
-async function fsDelete(col,id){ await deleteDoc(doc(db,col,id)); }
 async function fsWhere(col,campo,val){ const s=await getDocs(query(collection(db,col),where(campo,"==",val))); return s.docs.map(d=>({id:d.id,...d.data()})); }
 
 const $ = s=>document.querySelector(s);
@@ -2147,14 +2074,14 @@ function toast(msg,erro=false){
   setTimeout(()=>{t.style.opacity="0";t.style.transition=".3s";setTimeout(()=>t.remove(),300);},2600);
 }
 function abrirModal(t,c,r=""){ $("#modal-titulo").textContent=t; $("#modal-corpo").innerHTML=c; $("#modal-pe").innerHTML=r; $("#modal-fundo").classList.add("on"); }
-function fecharModal(){ $("#modal-fundo").classList.remove("on"); }
+function fecharModal(){ $("#modal-fundo").classList.remove("on"); comentandoOfertaId=null; }
 function confirmar(t,txt,fn,rotulo="Confirmar"){
-  abrirModal(t,`<p style="color:var(--muted);font-size:14.5px">${esc(txt)}</p>`,
-    `<button class="btn fantasma" onclick="fecharModal()">Cancelar</button><button class="btn" style="background:var(--g3)" id="btn-conf">${esc(rotulo)}</button>`);
+  abrirModal(t,`<p style="color:var(--cinza);font-size:14.5px">${esc(txt)}</p>`,
+    `<button class="btn fantasma" onclick="fecharModal()">Cancelar</button><button class="btn" style="background:var(--preco-promo)" id="btn-conf">${esc(rotulo)}</button>`);
   $("#btn-conf").onclick=async()=>{ await fn(); fecharModal(); };
 }
 function vazioHTML(ic,t,p,onclick="",botao=""){
-  return `<div class="vazio"><div class="ic">${ic}</div><b style="color:var(--g1);font-size:16px">${esc(t)}</b><p>${esc(p)}</p>${botao?`<button class="btn" onclick="${onclick}">${esc(botao)}</button>`:""}</div>`;
+  return `<div class="vazio"><div class="ic">${ic}</div><b style="color:var(--verde-escuro);font-size:16px">${esc(t)}</b><p>${esc(p)}</p>${botao?`<button class="btn" onclick="${onclick}">${esc(botao)}</button>`:""}</div>`;
 }
 window.fecharModal=fecharModal;
 
@@ -2162,11 +2089,12 @@ window.fecharModal=fecharModal;
 let sessao=null;
 let carrinho=[];
 let cacheProdutos=[], cacheOfertas=[], cacheMercados={}, cachePatrocinados=[], cachePedidos=[];
-let cacheOfertasCli=[], cacheComentarios={};
+let cacheComunidade=[], cacheComentarios=[];
+let comentandoOfertaId=null;
 const _pedStatus={};
 let abaCliente="comprar", filtroMerc="todos", filtroCat="todas", termoBusca="";
 let unsubProdutos=null, unsubOfertas=null, unsubMercados=null, unsubPatro=null, unsubPedidos=null;
-let unsubOfertasCli=null, unsubComentarios={};
+let unsubComunidade=null, unsubComentarios=null;
 let localCliente=null;   // {lat,lng,label,cep}
 
 /* ====== utilidades de comparação/distância ====== */
@@ -2228,8 +2156,9 @@ async function criarConta(){
 function sair(){
   sessao=null; carrinho=[];
   if(unsubProdutos)unsubProdutos(); if(unsubOfertas)unsubOfertas(); if(unsubMercados)unsubMercados(); if(unsubPatro)unsubPatro(); if(unsubPedidos)unsubPedidos();
-  if(unsubOfertasCli)unsubOfertasCli();
-  unsubProdutos=unsubOfertas=unsubMercados=unsubPatro=unsubPedidos=unsubOfertasCli=null;
+  if(unsubComunidade)unsubComunidade(); if(unsubComentarios)unsubComentarios();
+  unsubProdutos=unsubOfertas=unsubMercados=unsubPatro=unsubPedidos=null;
+  unsubComunidade=unsubComentarios=null;
   try{ localStorage.removeItem("cesta_c_sessao"); }catch(e){}
   $("#topo").classList.add("escondido"); $("#conteudo").classList.add("escondido");
   $("#tela-portal").classList.remove("escondido");
@@ -2269,14 +2198,17 @@ function ligarSincronismo(){
     cachePatrocinados=snap.docs.map(d=>({id:d.id,...d.data()}));
     if(sessao) montarRodapePatro();
   },err=>{ /* coleção pode não ter permissão ainda */ });
-  // ofertas cadastradas por clientes (apenas aprovadas para visualização)
-  unsubOfertasCli=onSnapshot(collection(db,"ofertasClientes"),snap=>{
-    cacheOfertasCli=snap.docs.map(d=>({id:d.id,...d.data()}))
-      .sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
-    if(sessao && abaCliente==="ofertas") renderOfertasClientes();
-    else if(sessao) telaCliente(); // atualiza badge
-  },err=>{ console.warn("ofertasClientes:",err); });
-
+  unsubComunidade=onSnapshot(collection(db,"ofertasComunidade"),snap=>{
+    cacheComunidade=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(sessao && abaCliente==="comunidade") renderComunidade();
+  },err=>{ /* coleção pode não ter permissão ainda */ });
+  unsubComentarios=onSnapshot(collection(db,"comentariosComunidade"),snap=>{
+    cacheComentarios=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(sessao && abaCliente==="comunidade") renderComunidade();
+    if($("#modal-fundo").classList.contains("on") && comentandoOfertaId){
+      const el=$("#lista-comentarios"); if(el) el.innerHTML=comentariosHTML(comentandoOfertaId);
+    }
+  },err=>{ /* coleção pode não ter permissão ainda */ });
   unsubPedidos=onSnapshot(query(collection(db,"pedidos"),where("clienteId","==",sessao.id)),snap=>{
     const novos=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
     novos.forEach(p=>{
@@ -2296,7 +2228,6 @@ function ligarSincronismo(){
 /* ====== navegação ====== */
 function telaCliente(){
   const nQtd=carrinho.reduce((s,i)=>s+i.qtd,0);
-  const nOfCli=cacheOfertasCli.filter(o=>o.status==="aprovada").length;
   $("#conteudo").innerHTML=`
     <div class="barra-secoes">
       <button class="${abaCliente==='comprar'?'on':''}" onclick="irCliente('comprar')">
@@ -2305,8 +2236,8 @@ function telaCliente(){
       <button class="${abaCliente==='lista'?'on':''}" onclick="irCliente('lista')">
         <span class="tab-ic">🧺</span><span>Minha lista</span>${nQtd?`<span class="badge">${nQtd}</span>`:""}
       </button>
-      <button class="${abaCliente==='ofertas'?'on':''}" onclick="irCliente('ofertas')">
-        <span class="tab-ic">🏷️</span><span>Ofertas</span>${nOfCli?`<span class="badge" style="background:var(--amber);color:#3a1800">${nOfCli}</span>`:""}
+      <button class="${abaCliente==='comunidade'?'on':''}" onclick="irCliente('comunidade')">
+        <span class="tab-ic">📣</span><span>Comunidade</span>
       </button>
       <button class="${abaCliente==='historico'?'on':''}" onclick="irCliente('historico')">
         <span class="tab-ic">🕘</span><span>Histórico</span>
@@ -2316,166 +2247,11 @@ function telaCliente(){
     <div id="rodape-patro" class="rodape-patro escondido"></div>`;
   if(abaCliente==="comprar") renderComprar();
   else if(abaCliente==="lista") renderLista();
-  else if(abaCliente==="ofertas") renderOfertasClientes();
+  else if(abaCliente==="comunidade") renderComunidade();
   else renderHistorico();
   montarRodapePatro();
 }
 function irCliente(aba){ abaCliente=aba; telaCliente(); }
-
-/* ====== ABA OFERTAS DE CLIENTES ====== */
-function renderOfertasClientes(){
-  const c=$("#cliente-corpo"); if(!c) return;
-  const ofertasAprovadas=cacheOfertasCli.filter(o=>o.status==="aprovada");
-  const minhasPendentes=cacheOfertasCli.filter(o=>o.clienteId===sessao.id && o.status==="pendente");
-
-  let html=`<div class="ofertas-inner">
-    <div class="titulo-secao" style="margin-bottom:12px">
-      <div><h2 style="font-size:20px">Ofertas da comunidade</h2><div class="sub" style="font-size:12px">Compartilhe e descubra ofertas encontradas por outros clientes</div></div>
-    </div>
-    <button class="btn-nova-oferta-cli" onclick="abrirFormOfertaCli()">🏷️ Publicar uma oferta que encontrei</button>`;
-
-  if(minhasPendentes.length){
-    html+=`<div style="margin-bottom:14px">`;
-    for(const o of minhasPendentes){
-      html+=`<div class="minha-oferta-pendente">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
-          <div class="mp-titulo">${esc(o.titulo)}</div>
-          <span class="tag-pendente">⏳ Aguardando</span>
-        </div>
-        <div class="mp-desc">${esc(o.descricao||"")}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px">Aguardando aprovação do administrador para aparecer para todos.</div>
-      </div>`;
-    }
-    html+=`</div>`;
-  }
-
-  if(!ofertasAprovadas.length){
-    html+=vazioHTML("🏷️","Nenhuma oferta ainda","Seja o primeiro a compartilhar uma oferta!","abrirFormOfertaCli()","🏷️ Publicar oferta");
-  } else {
-    for(const o of ofertasAprovadas){
-      const comentarios=cacheComentarios[o.id]||[];
-      const bgStyle=o.foto?`background-image:url('${o.foto}')`:"";
-      html+=`<div class="oferta-cliente-card" id="oc-${o.id}">
-        <div class="oc-banner ${o.foto?'tem-foto':''}">
-          ${o.foto?`<div class="oc-bg" style="${bgStyle}"></div>`:""}
-          <h4>${esc(o.titulo)}</h4>
-          <p>${esc(o.descricao||"")}</p>
-        </div>
-        <div class="oc-meta">
-          <div class="oc-autor">por <b>${esc(o.clienteNome||"Cliente")}</b></div>
-          ${o.local?`<div class="oc-validade">📍 ${esc(o.local)}</div>`:""}
-          ${o.validade?`<div class="oc-validade" style="margin-left:8px">⏱ ${esc(o.validade)}</div>`:""}
-        </div>
-        <div class="oc-acoes">
-          <button class="btn-comentar" onclick="abrirComentarios('${o.id}')">
-            💬 Comentar${comentarios.length?` (${comentarios.length})`:""}
-          </button>
-        </div>
-        <div class="oc-cont-comentarios" id="coms-${o.id}" style="display:none"></div>
-      </div>`;
-    }
-  }
-  html+=`</div>`;
-  c.innerHTML=html;
-}
-
-async function abrirFormOfertaCli(){
-  abrirModal("Publicar oferta",`
-    <div class="campo"><label>Título da oferta</label><input id="ocf-titulo" placeholder="Ex.: Arroz 5kg por R$ 18 no Bom Preço"></div>
-    <div class="campo"><label>Descrição</label><textarea class="oferta-form-area" id="ocf-desc" placeholder="Detalhes da oferta: produto, preço, onde encontrou..."></textarea></div>
-    <div class="campo"><label>Local (opcional)</label><input id="ocf-local" placeholder="Ex.: Mercado Bom Preço — Farol"></div>
-    <div class="campo"><label>Validade (opcional)</label><input id="ocf-validade" placeholder="Ex.: Só hoje, Até sexta"></div>
-    <div class="campo"><label>Link da imagem (opcional)</label><input id="ocf-foto" placeholder="https://..."></div>
-    <div style="background:var(--g9);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--muted);margin-top:4px">
-      ℹ️ Sua oferta será revisada pelo administrador antes de aparecer para todos os clientes.
-    </div>
-  `,`
-    <button class="btn fantasma" onclick="fecharModal()">Cancelar</button>
-    <button class="btn" style="background:var(--g3)" id="ocf-salvar">Enviar para análise</button>
-  `);
-  $("#ocf-salvar").onclick=async()=>{
-    const titulo=$("#ocf-titulo").value.trim();
-    const descricao=$("#ocf-desc").value.trim();
-    if(!titulo) return toast("Dê um título à oferta.",true);
-    if(!descricao) return toast("Descreva a oferta.",true);
-    $("#ocf-salvar").disabled=true;
-    try{
-      await fsAdd("ofertasClientes",{
-        titulo,descricao,
-        local:$("#ocf-local").value.trim(),
-        validade:$("#ocf-validade").value.trim(),
-        foto:$("#ocf-foto").value.trim(),
-        clienteId:sessao.id,clienteNome:sessao.nome,clienteEmail:sessao.email,
-        status:"pendente",criadoEm:Date.now()
-      });
-      toast("Oferta enviada! Aguardando aprovação.");
-      fecharModal();
-      irCliente("ofertas");
-    }catch(e){ console.error(e); toast("Erro ao enviar oferta.",true); $("#ocf-salvar").disabled=false; }
-  };
-}
-
-async function abrirComentarios(ofertaId){
-  const box=document.getElementById("coms-"+ofertaId);
-  if(!box) return;
-  const visivel=box.style.display!=="none";
-  if(visivel){ box.style.display="none"; return; }
-  box.style.display="block";
-  box.innerHTML=`<div style="padding:10px 0;text-align:center;font-size:13px;color:var(--muted)">Carregando...</div>`;
-
-  try{
-    const snap=await getDocs(query(collection(db,"comentariosOfertas"),where("ofertaId","==",ofertaId)));
-    const comentarios=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.criadoEm||0)-(b.criadoEm||0));
-    cacheComentarios[ofertaId]=comentarios;
-    _renderComentariosBox(box,ofertaId,comentarios);
-  }catch(e){ box.innerHTML=`<div style="padding:10px;color:var(--red);font-size:12px">Erro ao carregar comentários.</div>`; }
-}
-
-function _renderComentariosBox(box,ofertaId,comentarios){
-  let html=``;
-  if(comentarios.length){
-    for(const c of comentarios){
-      const ini=(c.autorNome||"?")[0].toUpperCase();
-      const data=c.criadoEm?new Date(c.criadoEm).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
-      html+=`<div class="comentario-item">
-        <div class="com-avatar">${ini}</div>
-        <div class="com-corpo">
-          <div class="com-autor">${esc(c.autorNome||"Cliente")}</div>
-          <div class="com-texto">${esc(c.texto)}</div>
-          <div class="com-data">${data}</div>
-        </div>
-      </div>`;
-    }
-  } else {
-    html+=`<div style="padding:8px 0;font-size:12.5px;color:var(--muted);text-align:center">Nenhum comentário ainda. Seja o primeiro!</div>`;
-  }
-  html+=`<div style="display:flex;gap:8px;margin-top:10px;align-items:flex-start">
-    <textarea id="com-input-${ofertaId}" placeholder="Escreva um comentário..." style="flex:1;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;resize:none;min-height:40px;background:var(--g9);font-family:inherit" rows="1"></textarea>
-    <button onclick="enviarComentario('${ofertaId}')" style="background:var(--g3);color:#fff;border:none;border-radius:8px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;flex-shrink:0">Enviar</button>
-  </div>`;
-  box.innerHTML=html;
-}
-
-async function enviarComentario(ofertaId){
-  const input=document.getElementById("com-input-"+ofertaId);
-  const texto=input?input.value.trim():"";
-  if(!texto) return toast("Escreva algo antes de enviar.",true);
-  input.disabled=true;
-  try{
-    await fsAdd("comentariosOfertas",{
-      ofertaId,texto,
-      autorId:sessao.id,autorNome:sessao.nome,
-      criadoEm:Date.now()
-    });
-    // recarrega comentários
-    const snap=await getDocs(query(collection(db,"comentariosOfertas"),where("ofertaId","==",ofertaId)));
-    const comentarios=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.criadoEm||0)-(b.criadoEm||0));
-    cacheComentarios[ofertaId]=comentarios;
-    const box=document.getElementById("coms-"+ofertaId);
-    if(box) _renderComentariosBox(box,ofertaId,comentarios);
-    toast("Comentário publicado!");
-  }catch(e){ console.error(e); toast("Erro ao enviar comentário.",true); if(input) input.disabled=false; }
-}
 
 /* ====== ABA COMPRAR ====== */
 function renderComprar(){
@@ -2640,39 +2416,26 @@ function baixarLista(){
   toast("Lista baixada.");
 }
 
-/* ---- salva o histórico da lista completa (melhor esforço) ---- */
-async function _salvarHistoricoCompra(total){
+async function finalizarCompra(){
+  if(!carrinho.length) return toast("Lista vazia.",true);
+  const total=carrinho.reduce((s,i)=>s+i.preco*i.qtd,0);
+  const agora=Date.now();
+  const grupos={};
+  carrinho.forEach(i=>{ const k=i.supermercadoId||"_sem"; (grupos[k]??=[]).push(i); });
+
+  // 1) histórico (lista completa, como antes) — melhor esforço
   try{
     await fsAdd("historico",{clienteId:sessao.id,data:new Date().toISOString(),total,
       itens:carrinho.map(i=>({nome:i.nome,emoji:i.emoji,qtd:i.qtd,preco:i.preco,mercadoNome:i.mercadoNome,supermercadoId:i.supermercadoId||null}))});
   }catch(e){ console.error("Falha ao salvar histórico:",e); }
-}
 
-/*
- * Envia o pedido apenas para os supermercadoId presentes em `idsPermitidos`.
- * Isso garante que a lista nunca seja enviada para mais de um supermercado
- * quando o cliente optar por escolher manualmente apenas 1 loja; e permite
- * o envio "para o vencedor" quando o cliente aceita a sugestão.
- * Itens cujo supermercadoId não esteja em idsPermitidos voltam a ficar pendentes
- * na lista (não são removidos do carrinho).
- */
-async function _enviarPedidoParaLojas(idsPermitidos){
-  const setPermitidos=new Set(idsPermitidos);
-  const itensEnviar=carrinho.filter(i=>i.supermercadoId && setPermitidos.has(i.supermercadoId));
-  if(!itensEnviar.length) return {pedidosCriados:0,erros:["sem-itens"],enviosZap:[]};
-
-  const total=itensEnviar.reduce((s,i)=>s+i.preco*i.qtd,0);
-  const agora=Date.now();
-  const grupos={};
-  itensEnviar.forEach(i=>{ (grupos[i.supermercadoId]??=[]).push(i); });
-
-  await _salvarHistoricoCompra(total);
-
+  // 2) um pedido por supermercado (nova coleção "pedidos")
   const enviosZap=[];
-  let pedidosCriados=0;
+  let pedidosCriados=0, semMercado=0;
   const erros=[];
   for(const [sid,itens] of Object.entries(grupos)){
     const totalGrupo=itens.reduce((s,i)=>s+i.preco*i.qtd,0);
+    if(sid==="_sem"){ semMercado+=itens.length; continue; } // itens sem supermercadoId (ex.: repetidos)
     const m = cacheMercados[sid] || null;
     try{
       const pid=await fsAdd("pedidos",{
@@ -2693,94 +2456,24 @@ async function _enviarPedidoParaLojas(idsPermitidos){
     }
   }
 
-  // remove do carrinho só o que foi efetivamente enviado
-  if(pedidosCriados>0){
-    carrinho=carrinho.filter(i=>!(i.supermercadoId && setPermitidos.has(i.supermercadoId)));
-  }
-
-  return {pedidosCriados,erros,enviosZap};
-}
-
-function _modalResultadoPedido({pedidosCriados,erros,enviosZap}){
+  // se nada foi enviado e houve erro, avisa com a causa
   if(pedidosCriados===0 && erros.length){
     const permissao=erros.some(x=>/permission|insufficient/i.test(x));
-    toast(permissao
+    return toast(permissao
       ? "Pedido não enviado: o Firestore bloqueou a coleção 'pedidos'. Publique as regras."
-      : (erros[0]==="sem-itens" ? "Nenhum item dessa loja na lista." : "Pedido não enviado: "+erros[0]), true);
-    return;
+      : "Pedido não enviado: "+erros[0], true);
   }
-  const semMercado=carrinho.filter(i=>!i.supermercadoId).length;
-  const restantes=carrinho.length;
+
+  carrinho=[];
   const avisoSem = semMercado ? `<p style="color:var(--muted);font-size:12.5px;margin-bottom:10px">⚠️ ${semMercado} item(ns) sem loja vinculada (adicionados por "Repetir") não geraram pedido. Re-adicione pela aba Comprar para enviá-los.</p>` : "";
-  const avisoRestante = (restantes && restantes>semMercado) ? `<p style="color:var(--muted);font-size:12.5px;margin-bottom:10px">ℹ️ Os demais itens da lista continuam pendentes — finalize novamente para enviá-los a outra loja.</p>` : "";
   const corpoZap = enviosZap.length
     ? `<p style="color:var(--muted);font-size:14px;margin-bottom:12px">Envie a lista direto pelo WhatsApp da loja para agilizar o atendimento:</p>`
       + enviosZap.map(e=>`<a class="btn full" style="background:#25D366;margin-bottom:8px;display:block;text-align:center" href="${e.link}" target="_blank" rel="noopener">📲 Enviar para ${esc(e.emoji+" "+e.nome)}</a>`).join("")
-    : `<p style="color:var(--muted);font-size:14px">A loja escolhida ainda não tem WhatsApp cadastrado, mas o pedido foi registrado e ela o verá no painel.</p>`;
+    : `<p style="color:var(--muted);font-size:14px">As lojas escolhidas ainda não têm WhatsApp cadastrado, mas o pedido foi registrado e elas o verão no painel.</p>`;
   abrirModal("✅ Pedido enviado!",
-    `<p style="color:var(--g1);font-size:14.5px;margin-bottom:14px">Sua lista foi enviada ao supermercado. Você receberá a confirmação aqui no app e pode acompanhar o status na aba <b>Histórico</b>.</p>${avisoSem}${avisoRestante}${corpoZap}`,
+    `<p style="color:var(--g1);font-size:14.5px;margin-bottom:14px">Sua lista foi enviada ao(s) supermercado(s). Você receberá a confirmação aqui no app e pode acompanhar o status na aba <b>Histórico</b>.</p>${avisoSem}${corpoZap}`,
     `<button class="btn" onclick="fecharModal()">Concluir</button>`);
   abaCliente="historico"; telaCliente();
-}
-
-/* Aceitar a sugestão do card de recomendação → envia só para o supermercado vencedor
-   e, em seguida, limpa toda a lista de compras automaticamente. */
-async function aceitarSugestao(){
-  const recos=calcularRecomendacao();
-  if(!recos.length) return toast("Adicione produtos para receber uma sugestão.",true);
-  const best=recos[0];
-  confirmar("Confirmar envio",
-    `Enviar a lista para ${best.loja.nome}? Ao confirmar, sua lista de compras será enviada e limpa automaticamente.`,
-    async()=>{
-      const r=await _enviarPedidoParaLojas([best.loja.id]);
-      if(r.pedidosCriados>0) carrinho=[]; // limpa a lista inteira após aceitar a sugestão
-      _modalResultadoPedido(r);
-    },
-    "Aceitar e enviar");
-}
-
-/* Não aceitar a sugestão → cliente escolhe individualmente 1 única loja para enviar */
-function escolherLojaManual(){
-  const grupos={};
-  carrinho.forEach(i=>{ if(i.supermercadoId) (grupos[i.supermercadoId]??=[]).push(i); });
-  const ids=Object.keys(grupos);
-  if(!ids.length) return toast("Nenhum item da lista está vinculado a uma loja.",true);
-
-  const linhas=ids.map(sid=>{
-    const m=cacheMercados[sid]; const itens=grupos[sid];
-    const totalLoja=itens.reduce((s,i)=>s+i.preco*i.qtd,0);
-    const nome=m?m.nome:"Loja desconhecida"; const emoji=m?(m.emoji||"🏬"):"🏬";
-    return `<button class="btn fantasma full" style="justify-content:space-between;margin-bottom:8px" onclick="confirmarEnvioLojaUnica('${sid}')">
-      <span>${emoji} ${esc(nome)}</span>
-      <span style="font-weight:800">${reais(totalLoja)}</span>
-    </button>`;
-  }).join("");
-
-  abrirModal("Enviar para qual loja?",
-    `<p style="color:var(--muted);font-size:13.5px;margin-bottom:14px">Escolha <b>uma única loja</b> para receber o pedido. Os itens das demais lojas continuarão na sua lista até você decidir.</p>${linhas}`,
-    `<button class="btn fantasma" onclick="fecharModal()">Cancelar</button>`);
-}
-
-async function confirmarEnvioLojaUnica(sid){
-  const m=cacheMercados[sid]; const nome=m?m.nome:"essa loja";
-  fecharModal();
-  confirmar("Confirmar envio",
-    `Enviar a lista apenas para ${nome}? A lista não será enviada para nenhuma outra loja.`,
-    async()=>{ const r=await _enviarPedidoParaLojas([sid]); _modalResultadoPedido(r); },
-    "Enviar pedido");
-}
-
-async function finalizarCompra(){
-  if(!carrinho.length) return toast("Lista vazia.",true);
-  const recos=calcularRecomendacao();
-  if(!recos.length) return toast("Nenhum item da lista está vinculado a uma loja.",true);
-  const best=recos[0];
-  const outras=recos.length>1;
-  abrirModal("Para onde enviar o pedido?",
-    `<p style="color:var(--g1);font-size:14.5px;margin-bottom:14px">Sugerimos <b>${esc(best.loja.nome)}</b> como o melhor lugar para comprar tudo. Você pode aceitar a sugestão ou escolher manualmente para qual loja enviar — a lista nunca é enviada para mais de uma loja ao mesmo tempo.</p>`,
-    `<button class="btn full" style="margin-bottom:8px" onclick="fecharModal();aceitarSugestao()">🏆 Aceitar sugestão (${esc(best.loja.nome)})</button>
-     ${outras?`<button class="btn fantasma full" onclick="fecharModal();escolherLojaManual()">Não aceitar — escolher outra loja</button>`:""}
-     <button class="btn fantasma full" style="margin-top:8px;box-shadow:none;color:var(--muted)" onclick="fecharModal()">Cancelar</button>`);
 }
 
 /* ====== ABA HISTÓRICO ====== */
@@ -2811,8 +2504,7 @@ async function renderHistorico(){
   let hist=[];
   try{ hist=(await fsWhere("historico","clienteId",sessao.id)).sort((a,b)=>new Date(b.data)-new Date(a.data)); }
   catch(e){ console.error(e); }
-  let html=`<div class="historico-inner"><div class="titulo-secao"><div><h2>Histórico</h2><div class="sub">Seus pedidos e listas finalizadas</div></div>
-    ${hist.length?`<button class="btn fantasma peq" onclick="limparHistorico()">Limpar</button>`:""}</div>`;
+  let html=`<div class="historico-inner"><div class="titulo-secao"><div><h2>Histórico</h2><div class="sub">Seus pedidos e listas finalizadas</div></div></div>`;
   html+=pedidosStatusHTML();
   if(!hist.length){ c.innerHTML=html+vazioHTML("🕘","Sem compras ainda","Finalize uma lista para vê-la aqui","irCliente('comprar')","🛍️ Começar a comprar")+"</div>"; return; }
   html+=`<div class="grade">`;
@@ -2832,22 +2524,6 @@ async function renderHistorico(){
   html+=`</div></div>`; c.innerHTML=html; window.__hist=hist;
 }
 function toggleHist(k){ $("#hist-"+k)?.classList.toggle("aberto"); }
-async function limparHistorico(){
-  const hist=window.__hist||[];
-  if(!hist.length) return toast("Não há histórico para limpar.",true);
-  confirmar("Limpar histórico","Remove permanentemente todas as listas de compras finalizadas. Os pedidos enviados aos supermercados não serão afetados.",
-    async()=>{
-      try{
-        await Promise.all(hist.map(h=>fsDelete("historico",h.id)));
-        toast("Histórico limpo.");
-        window.__hist=[];
-        renderHistorico();
-      }catch(e){
-        console.error("Falha ao limpar histórico:",e);
-        toast("Não foi possível limpar o histórico. Verifique as regras do Firestore.",true);
-      }
-    },"Limpar histórico");
-}
 function repetirCompra(k){
   const h=window.__hist?.[k]; if(!h) return;
   h.itens.forEach(it=>{
@@ -2863,6 +2539,130 @@ function repetirCompra(k){
     }
   });
   toast("Itens adicionados à lista atual."); abaCliente="lista"; telaCliente();
+}
+
+/* ====== ABA COMUNIDADE (ofertas enviadas por clientes) ======
+   fluxo: cliente cadastra -> status "pendente" -> administrador aprova/rejeita no Gerencial
+   -> quando "aprovada", a oferta fica visível para todos os clientes e pode ser comentada */
+function tempoRelativo(ts){
+  if(!ts) return "";
+  const diff=Date.now()-ts, min=Math.floor(diff/60000), h=Math.floor(diff/3600000), d=Math.floor(diff/86400000);
+  if(min<1) return "agora mesmo";
+  if(min<60) return `${min} min atrás`;
+  if(h<24) return `${h}h atrás`;
+  if(d<7) return `${d}d atrás`;
+  return new Date(ts).toLocaleDateString("pt-BR");
+}
+
+function renderComunidade(){
+  const c=$("#cliente-corpo"); if(!c) return;
+  const minhas=cacheComunidade.filter(o=>o.clienteId===sessao.id).sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
+  const aprovadas=cacheComunidade.filter(o=>o.status==="aprovada")
+    .sort((a,b)=>((b.analisadoEm||b.criadoEm||0)-(a.analisadoEm||a.criadoEm||0)));
+
+  let html=`<div class="com-wrap">
+    <div class="com-cab">
+      <div><h2>Comunidade</h2><div class="sub">Ofertas compartilhadas por clientes, aprovadas pela equipe Cesta</div></div>
+      <button class="btn peq" onclick="abrirFormOferta()">+ Compartilhar oferta</button>
+    </div>`;
+
+  if(minhas.length){
+    html+=`<div class="minhas-ofertas"><div class="tit">Minhas ofertas enviadas</div>`;
+    minhas.forEach(o=>{
+      const st=o.status||"pendente";
+      const rotulo=st==="aprovada"?"✅ Publicada":st==="rejeitada"?"❌ Não aprovada":"⏳ Em análise";
+      html+=`<div class="mo-item">
+        <div><b>${esc(o.titulo)}</b>${st==="rejeitada"&&o.motivo?`<div class="mot">Motivo: ${esc(o.motivo)}</div>`:""}${st==="pendente"?`<div class="mot">Aguardando aprovação do administrador</div>`:""}</div>
+        <span class="tag-status ${st}">${rotulo}</span>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+
+  if(!aprovadas.length){
+    html+=vazioHTML("📣","Nenhuma oferta publicada ainda","Seja o primeiro a compartilhar uma promoção com a comunidade","abrirFormOferta()","+ Compartilhar oferta");
+  }else{
+    aprovadas.forEach(o=>{
+      const n=cacheComentarios.filter(cm=>cm.ofertaId===o.id).length;
+      html+=`<div class="cartao com-card">
+        ${o.foto?`<img class="foto-oferta" src="${esc(o.foto)}" alt="${esc(o.titulo)}" loading="lazy">`:""}
+        <h3>${esc(o.titulo)}</h3>
+        <div class="autor">por ${esc(o.clienteNome||"cliente")} · ${tempoRelativo(o.analisadoEm||o.criadoEm)}${o.validade?` · ${esc(o.validade)}`:""}</div>
+        <div class="desc">${esc(o.descricao||"")}</div>
+        <div class="rod-com">
+          <span class="tag" style="background:var(--g8);color:var(--g3)">Oferta da comunidade</span>
+          <button class="btn fantasma peq" onclick="abrirComentarios('${o.id}')">💬 Comentar${n?` (${n})`:""}</button>
+        </div>
+      </div>`;
+    });
+  }
+  html+=`</div>`;
+  c.innerHTML=html;
+}
+
+function abrirFormOferta(){
+  abrirModal("📣 Compartilhar uma oferta",`
+    <p style="color:var(--muted);font-size:13px;margin-bottom:14px">Encontrou uma promoção boa? Compartilhe com a comunidade. Sua oferta passa por uma análise do administrador antes de ficar visível para todos os clientes.</p>
+    <div class="campo"><label>Título</label><input id="oc-titulo" placeholder="Ex.: Tomate em promoção na Feira do Bairro"></div>
+    <div class="campo"><label>Descrição</label><textarea id="oc-desc" placeholder="Conte os detalhes da oferta..."></textarea></div>
+    <div class="campo"><label>Validade (opcional)</label><input id="oc-val" placeholder="Ex.: Até domingo"></div>
+    <div class="campo"><label>Link de uma foto (opcional)</label><input id="oc-foto" placeholder="https://..."></div>
+  `,`
+    <button class="btn fantasma" onclick="fecharModal()">Cancelar</button>
+    <button class="btn" id="oc-enviar">Enviar para análise</button>
+  `);
+  $("#oc-enviar").onclick=enviarOfertaComunidade;
+}
+
+async function enviarOfertaComunidade(){
+  const titulo=$("#oc-titulo").value.trim(), descricao=$("#oc-desc").value.trim();
+  const validade=$("#oc-val").value.trim(), foto=$("#oc-foto").value.trim();
+  if(!titulo||!descricao) return toast("Preencha título e descrição.",true);
+  $("#oc-enviar").disabled=true;
+  try{
+    await fsAdd("ofertasComunidade",{
+      clienteId:sessao.id, clienteNome:sessao.nome, titulo, descricao, validade, foto,
+      status:"pendente", motivo:"", criadoEm:Date.now(), analisadoEm:null, analisadoPor:null
+    });
+    toast("Oferta enviada! Você verá o status em \"Minhas ofertas enviadas\".");
+    fecharModal();
+  }catch(e){
+    console.error(e); toast("Erro ao enviar oferta.",true); $("#oc-enviar").disabled=false;
+  }
+}
+
+function comentariosHTML(ofertaId){
+  const lst=cacheComentarios.filter(c=>c.ofertaId===ofertaId).sort((a,b)=>(a.criadoEm||0)-(b.criadoEm||0));
+  if(!lst.length) return `<div class="sem-coment">Seja o primeiro a comentar sobre essa oferta.</div>`;
+  return lst.map(c=>`<div class="coment-item"><b>${esc(c.clienteNome||"cliente")}</b><span class="coment-data">${tempoRelativo(c.criadoEm)}</span><p>${esc(c.texto)}</p></div>`).join("");
+}
+
+function abrirComentarios(ofertaId){
+  const o=cacheComunidade.find(x=>x.id===ofertaId); if(!o) return;
+  comentandoOfertaId=ofertaId;
+  abrirModal(`💬 ${o.titulo}`,`
+    <div id="lista-comentarios" class="lista-comentarios">${comentariosHTML(ofertaId)}</div>
+    <div class="campo" style="margin-top:14px"><label>Seu comentário</label><textarea id="novo-coment" placeholder="O que você achou dessa oferta?"></textarea></div>
+  `,`
+    <button class="btn fantasma" onclick="fecharModal()">Fechar</button>
+    <button class="btn" id="btn-enviar-coment">Comentar</button>
+  `);
+  $("#btn-enviar-coment").onclick=enviarComentario;
+}
+
+async function enviarComentario(){
+  const txt=$("#novo-coment").value.trim();
+  if(!txt) return toast("Escreva um comentário.",true);
+  const ofertaId=comentandoOfertaId;
+  $("#btn-enviar-coment").disabled=true;
+  try{
+    await fsAdd("comentariosComunidade",{ofertaId,clienteId:sessao.id,clienteNome:sessao.nome,texto:txt,criadoEm:Date.now()});
+    const campo=$("#novo-coment"); if(campo) campo.value="";
+    toast("Comentário publicado.");
+  }catch(e){
+    console.error(e); toast("Erro ao publicar comentário.",true);
+  }
+  const btn=$("#btn-enviar-coment"); if(btn) btn.disabled=false;
 }
 
 /* ====== CARROSSEL / OFERTAS DO PORTAL / RODAPÉ PATROCINADO ====== */
@@ -2929,14 +2729,14 @@ function montarRodapePatro(){
 function atualizarLocLabel(){ const l=$("#loc-label"); if(l) l.textContent=localCliente?localCliente.label:"definir local"; }
 function abrirLocal(){
   abrirModal("Sua localização",`
-    <p style="color:var(--muted);font-size:14px;margin-bottom:14px">Usamos sua localização só para mostrar os mercados mais próximos e calcular distâncias na recomendação.</p>
+    <p style="color:var(--cinza);font-size:14px;margin-bottom:14px">Usamos sua localização só para mostrar os mercados mais próximos e calcular distâncias na recomendação.</p>
     <div class="loc-opt">
       <button class="btn full" id="loc-gps">📍 Usar minha localização atual</button>
       <div class="ou">— ou informe seu CEP —</div>
       <div class="campo"><input id="loc-cep" placeholder="00000-000" inputmode="numeric" maxlength="9" value="${localCliente&&localCliente.cep?esc(localCliente.cep):""}"></div>
       <button class="btn fantasma full" id="loc-cep-btn">Buscar pelo CEP</button>
     </div>
-    <div id="loc-status" style="font-size:13px;margin-top:14px;text-align:center;color:var(--muted)"></div>
+    <div id="loc-status" style="font-size:13px;margin-top:14px;text-align:center;color:var(--cinza)"></div>
   `);
   const st=$("#loc-status");
   $("#loc-gps").onclick=()=>{
@@ -2989,7 +2789,7 @@ function calcularRecomendacao(){
 function recomendacaoHTML(){
   const recos=calcularRecomendacao();
   const nItensDistintos=carrinho.length;
-  if(!recos.length) return `<div class="cartao" style="text-align:center;color:var(--muted);margin-bottom:16px">Adicione produtos para ver o melhor lugar para comprar.</div>`;
+  if(!recos.length) return `<div class="cartao" style="text-align:center;color:var(--cinza);margin-bottom:16px">Adicione produtos para ver o melhor lugar para comprar.</div>`;
   const best=recos[0];
   const completos=recos.filter(r=>r.cobertura===nItensDistintos);
   const base=completos.length?completos:recos;
@@ -3003,10 +2803,6 @@ function recomendacaoHTML(){
       <div class="bloco"><div class="n">${distLabel(best.dist)}</div><div class="r">${localCliente?"distância":"defina seu local"}</div></div>
     </div>
     ${economia>0.01?`<div class="eco">💰 Economia de até <b>${reais(economia)}</b> frente ao mercado mais caro.</div>`:""}
-    <div class="reco-acoes">
-      <button class="btn reco-aceitar" onclick="aceitarSugestao()">✓ Aceitar sugestão</button>
-      ${recos.length>1?`<button class="btn reco-recusar" onclick="escolherLojaManual()">Não aceitar</button>`:""}
-    </div>
     ${best.loja.lat!=null?`<a class="btn btn-mapa" href="https://www.google.com/maps/dir/?api=1&destination=${best.loja.lat},${best.loja.lng}" target="_blank">🗺️ Como chegar</a>`:`<button class="btn btn-mapa" onclick="abrirLocal()">📍 Definir minha localização</button>`}
   </div>`;
   if(recos.length>1){
@@ -3036,8 +2832,7 @@ Object.assign(window,{
   trocarAba,fazerLogin,criarConta,sair,irCliente,setFiltroMerc,setFiltroCat,buscar,
   addCarrinho,marcarItem,mudarQtd,removerItem,limparLista,baixarLista,finalizarCompra,
   toggleHist,repetirCompra,fecharModal,carMover,abrirLocal,
-  aceitarSugestao,escolherLojaManual,confirmarEnvioLojaUnica,limparHistorico,
-  abrirFormOfertaCli,abrirComentarios,enviarComentario
+  abrirFormOferta,abrirComentarios
 });
 
 (async function init(){
@@ -3060,8 +2855,8 @@ Object.assign(window,{
     console.error(e);
     document.getElementById("carregando").innerHTML=`<div style="text-align:center;padding:30px;max-width:420px">
       <div style="font-size:40px">☁️⚠️</div>
-      <h2 style="color:var(--g1);margin:10px 0">Sem conexão com a nuvem</h2>
-      <p style="color:var(--muted);font-size:14px">Verifique a internet e as <b>regras do Firestore</b>. Detalhe: ${esc(e.message||e)}</p></div>`;
+      <h2 style="color:var(--verde-escuro);margin:10px 0">Sem conexão com a nuvem</h2>
+      <p style="color:var(--cinza);font-size:14px">Verifique a internet e as <b>regras do Firestore</b>. Detalhe: ${esc(e.message||e)}</p></div>`;
     return;
   }
   document.getElementById("carregando").style.display="none";
