@@ -2231,13 +2231,139 @@
   .mo-del{color:var(--red);border-color:var(--red)}
   .mo-del:active{background:var(--red);color:#fff}
 
-  /* ── Responsivo: usa o espaço no computador, 2 colunas no celular ── */
-  /* grade de produtos (Comprar) também responsiva */
+  /* ════════════════════════════════════════════════════════════════
+     LAYOUT ADAPTÁVEL
+     • Celular  → experiência de aplicativo nativo (barra inferior fixa,
+                  safe-area do notch, gestos suaves, sem cromo de site)
+     • Computador → site moderno (menu lateral, várias colunas, hover,
+                    diálogos centralizados)
+     Este bloco é o último do <style>, então vence no cascata.
+     ════════════════════════════════════════════════════════════════ */
+  :root{ --topo-h:56px; --barra-baixo:62px; }
+
+  /* base de produtos: ocupa o espaço disponível em qualquer tela */
   .grade.col3{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important}
-  @media (min-width:640px){
-    /* centraliza o app em telas grandes, sem esticar de borda a borda */
-    body{max-width:1080px!important}
-    .barra-secoes{top:56px}
+
+  /* ─────────────── CELULAR ( ≤ 820px ): app nativo ─────────────── */
+  @media (max-width:820px){
+    html{ background:var(--g0); }
+    html,body{ overscroll-behavior-y:none; }            /* sem "bounce" branco */
+    body{
+      max-width:520px;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+    }
+
+    /* cabeçalho respeita o recorte (notch) do aparelho */
+    .topo{
+      padding-top:env(safe-area-inset-top);
+      height:calc(var(--topo-h) + env(safe-area-inset-top));
+    }
+
+    /* BARRA DE ABAS → barra inferior fixa (padrão iOS/Android) */
+    .barra-secoes{
+      position:fixed; left:50%; bottom:0; top:auto!important;
+      transform:translateX(-50%);
+      width:100%; max-width:520px;
+      height:calc(var(--barra-baixo) + env(safe-area-inset-bottom));
+      padding-bottom:env(safe-area-inset-bottom);
+      background:rgba(255,255,255,.9);
+      -webkit-backdrop-filter:saturate(180%) blur(20px);
+      backdrop-filter:saturate(180%) blur(20px);
+      border-top:1px solid var(--line); border-bottom:none;
+      box-shadow:0 -2px 18px rgba(7,26,16,.08);
+      z-index:60;
+    }
+    .barra-secoes button{
+      height:var(--barra-baixo); gap:4px; font-size:10.5px;
+      border-bottom:none!important; color:var(--muted);
+      transition:color .18s ease, transform .18s ease;
+    }
+    .barra-secoes button .tab-ic{ font-size:23px; }
+    .barra-secoes button.on{ color:var(--g3); border-bottom-color:transparent!important; }
+    .barra-secoes button.on .tab-ic{ transform:translateY(-1px) scale(1.12); }
+    /* pílula sutil atrás do ícone ativo, bem app-like */
+    .barra-secoes button.on::before{
+      content:""; position:absolute; top:7px;
+      width:46px; height:30px; border-radius:15px;
+      background:var(--g8); z-index:-1;
+    }
+    .barra-secoes button .badge{ top:6px; right:calc(50% - 22px); }
+
+    /* o conteúdo deixa espaço para a barra inferior */
+    main{ padding-bottom:calc(var(--barra-baixo) + env(safe-area-inset-bottom) + 8px)!important; }
+
+    /* folha de pagamento/modal vira "bottom sheet" com puxador */
+    .modal{ border-radius:var(--r-xl) var(--r-xl) 0 0; max-height:90vh; }
+  }
+
+  /* ─────────────── COMPUTADOR ( ≥ 821px ): site moderno ─────────── */
+  @media (min-width:821px){
+    body{ max-width:1240px!important; }
+
+    /* cabeçalho alinhado às laterais do conteúdo */
+    .topo{ height:60px; padding:0 24px; gap:14px; }
+    .marca{ font-size:18px; }
+    .marca .cesta{ width:34px; height:34px; }
+    .quem{ display:block!important; }
+
+    /* CONTEÚDO em duas colunas: navegação lateral + área principal */
+    #conteudo{
+      display:grid;
+      grid-template-columns:236px minmax(0,1fr);
+      padding:0 24px; align-items:start;
+    }
+
+    /* BARRA DE ABAS → menu lateral fixo (sidebar) */
+    .barra-secoes{
+      grid-column:1; grid-row:1;
+      position:sticky; top:76px; align-self:start;
+      flex-direction:column; gap:6px;
+      padding:20px 16px 0 0;
+      background:transparent!important; border:none!important; box-shadow:none!important;
+      max-height:calc(100vh - 92px); overflow:auto;
+    }
+    .barra-secoes button{
+      flex:none; width:100%; height:auto;
+      flex-direction:row; justify-content:flex-start; gap:13px;
+      padding:13px 16px; border-radius:14px;
+      font-size:14.5px; font-weight:600; color:var(--muted);
+      border-bottom:none!important;
+      transition:background .15s ease, color .15s ease;
+    }
+    .barra-secoes button .tab-ic{ font-size:21px; }
+    .barra-secoes button.on{ background:var(--g8); color:var(--g2); border-bottom-color:transparent!important; }
+    .barra-secoes button.on .tab-ic{ transform:none; }
+    .barra-secoes button .badge{ position:static; margin-left:auto; top:auto; right:auto; }
+
+    /* coluna principal */
+    #cliente-corpo{ grid-column:2; grid-row:1; min-width:0; }
+    #rodape-patro{ grid-column:2; grid-row:2; }
+    .comprar-inner,.lista-inner{ padding:22px 4px 0!important; }
+    main{ padding-bottom:48px!important; }
+
+    /* mais produtos por linha, aproveitando a largura */
+    .grade.col3{ grid-template-columns:repeat(auto-fill,minmax(190px,1fr))!important; }
+
+    /* tela de login centralizada, como um site */
+    #tela-portal.portal{ display:grid; place-items:center; }
+    .portal-wrap{ max-width:440px; margin:0 auto; }
+
+    /* diálogos centralizados em vez de "bottom sheet" */
+    .modal-fundo{ place-items:center!important; }
+    .modal{ border-radius:var(--r-xl)!important; max-width:540px; max-height:88vh; overflow:auto; }
+  }
+
+  /* Estados de hover só onde existe mouse (evita "grudar" no toque) */
+  @media (hover:hover) and (pointer:fine) and (min-width:821px){
+    .prod{ cursor:pointer; }
+    .prod:hover{ transform:translateY(-4px); box-shadow:var(--sh-md); }
+    .barra-secoes button:hover{ background:var(--g9); color:var(--g2); }
+    .barra-secoes button.on:hover{ background:var(--g8); }
+    .chip:hover{ border-color:var(--g5); }
+    .btn:hover{ filter:brightness(1.06); }
+    .add:hover{ filter:brightness(1.05); }
+    .loc-btn:hover,.btn-sair:hover{ background:rgba(255,255,255,.18); }
   }
 
 </style>
